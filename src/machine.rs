@@ -1,3 +1,5 @@
+use ansi_term::Colour::{Red,Green};
+
 #[derive(Debug)]
 pub struct Machine {
     id: String,
@@ -19,5 +21,16 @@ impl Machine {
             state: words[3].to_string(),
             directory: words[4].to_string()
         }
+    }
+
+    pub fn to_output(&self) {
+        println!(
+            "{} {} {} ({}) {}",
+            Green.paint(self.id.as_str()),
+            Green.paint(self.name.as_str()),
+            Green.paint(self.provider.as_str()),
+            Red.paint(self.state.as_str()),
+            Green.paint(self.directory.as_str())
+        );
     }
 }
