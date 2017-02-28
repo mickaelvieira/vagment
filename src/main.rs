@@ -3,6 +3,8 @@ extern crate clap;
 extern crate ansi_term;
 extern crate vagment;
 
+use ansi_term::Colour::Yellow;
+
 use clap::{App, SubCommand};
 use std::process::Command;
 use vagment::machine::Machine;
@@ -23,7 +25,9 @@ fn get_vm_info() -> Vec<Machine> {
 
 fn print_machine_list() {
     let machines = get_vm_info();
-    println!("Id Name Provider State Path");
+    let output = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}", "Id", "Name", "Provider", "State", "Path");
+
+    println!("{}", Yellow.paint(output));
     for machine in &machines {
         machine.to_output();
     }

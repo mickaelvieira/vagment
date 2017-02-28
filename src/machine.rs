@@ -24,13 +24,15 @@ impl Machine {
     }
 
     pub fn to_output(&self) {
-        println!(
-            "{} {} {} ({}) {}",
-            Green.paint(self.id.as_str()),
-            Green.paint(self.name.as_str()),
-            Green.paint(self.provider.as_str()),
-            Red.paint(self.state.as_str()),
-            Green.paint(self.directory.as_str())
+
+        let output = format!(
+            "{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}",
+            self.id.as_str(),
+            self.name.as_str(),
+            self.provider.as_str(),
+            self.state.as_str(),
+            self.directory.as_str()
         );
+        println!("{}", Green.paint(output));
     }
 }
