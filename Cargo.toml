@@ -5,3 +5,4 @@ authors = ["Mickael Vieira <contact@mickael-vieira.com>"]
 
 [dependencies]
 ansi_term = "0.9.0"
+clap = "2.20.5"

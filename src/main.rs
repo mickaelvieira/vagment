@@ -1,89 +1,34 @@
+#[macro_use]
+extern crate clap;
 extern crate vagment;
 
-use std::env;
+use clap::{App, SubCommand};
 use std::process::Command;
-use vagment::logger;
-//
-#[derive(Debug)]
-struct Machine {
-    id: String,
-    name: String,
-    provider: String,
-    state: String,
-    directory: String
-}
+use vagment::machine::{Machine};
 
-// trait Const {
-//     fn from_output_line(&self, &str: line) -> Machine;
-// }
-//
-// impl Const for Machine {
-//     fn from_output_line(&self, &str: line) -> Machine {
-//         let mut words = line.to_string().split_whitespace();
-//
-//         let id = words.next().unwrap().to_string();
-//         let name = words.next().unwrap().to_string();
-//         let provider = words.next().unwrap().to_string();
-//         let state = words.next().unwrap().to_string();
-//         let directory = words.next().unwrap().to_string();
-//
-//         Machine{
-//             id: id,
-//             name: name,
-//             provider: provider,
-//             state: state,
-//             directory: directory
-//         }
-//     }
-// }
-
-fn get_vm_info() {
+fn get_vm_info() -> Vec<Machine> {
     let output = Command::new("vagrant")
         .arg("global-status")
         .output()
         .expect("ls command failed to start");
-
-    // println!("status: {}", output.status);
-    // println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
-    // println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
 
     let owned = String::from_utf8_lossy(&output.stdout).into_owned();
     let lines = owned.lines()
         .skip(2)
         .filter(|x| x.split_whitespace().count() == 5);
 
-    lines.map(|line| {
-        let mut words = line.split_whitespace();
-
-        let id = words.next().unwrap().to_string();
-        let name = words.next().unwrap().to_string();
-        let provider = words.next().unwrap().to_string();
-        let state = words.next().unwrap().to_string();
-        let directory = words.next().unwrap().to_string();
-
-        Machine{
-            id: id,
-            name: name,
-            provider: provider,
-            state: state,
-            directory: directory
-        }
-    })
+    lines.map(|line| Machine::from_output_line(line)).collect()
 }
 
 fn main() {
-    let version = env!("CARGO_PKG_VERSION");
-    let command = env::args().nth(1);
+    let _m = App::new("vagment")
+        .author(crate_authors!())
+        .version(crate_version!())
+        .subcommand(SubCommand::with_name("list"))
+        .subcommand(SubCommand::with_name("clear"))
+        .get_matches();
 
-    let o = get_vm_info();
+    let _m = get_vm_info();
 
-    // println!("{:?}", o);
-
-    if command.is_none() {
-        logger::error("Please provide a command");
-    } else {
-        if command.unwrap() == "version" {
-            logger::info(version);
-        }
-    }
+    println!("{:?}", _m.first());
 }
