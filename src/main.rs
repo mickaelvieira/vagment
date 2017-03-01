@@ -5,9 +5,9 @@ extern crate vagment;
 
 use ansi_term::Colour::Yellow;
 
-use clap::{App, SubCommand};
+use clap::{Arg, App, SubCommand};
 use std::process::Command;
-use vagment::machine::Machine;
+use vagment::app::Machine;
 
 fn get_vm_info() -> Vec<Machine> {
     let output = Command::new("vagrant")
@@ -45,8 +45,20 @@ fn main() {
     let m = App::new("vagment")
         .author(crate_authors!())
         .version(crate_version!())
-        .subcommand(SubCommand::with_name("list"))
-        .subcommand(SubCommand::with_name("refresh"))
+        .subcommand(SubCommand::with_name("list")
+            .about("List available machines")
+        )
+        .subcommand(SubCommand::with_name("refresh")
+            .about("Clear vagrant cache")
+        )
+        .subcommand(SubCommand::with_name("up")
+            .about("Bring up the specified machine")
+            .arg(Arg::with_name("index")
+                .short("i")
+                .help("Machine index")
+                .required(true)
+            )
+        )
         .get_matches();
 
     if m.is_present("list") {
