@@ -1,4 +1,4 @@
-use ansi_term::Colour::{Red,Green};
+use ansi_term::Colour::Green;
 
 #[derive(Debug)]
 pub struct Machine {
@@ -10,11 +10,15 @@ pub struct Machine {
 }
 
 impl Machine {
-    pub fn from_output_line(line: &str) -> Machine {
-        let line = line.to_string();
+    // Use of the Into Trait https://doc.rust-lang.org/nightly/core/convert/trait.Into.html
+    // Let the caller to pass either a String or &str type
+    // pub fn from_output_line<S: Into<String>>(line: S) -> Machine {
+    pub fn from_output_line<S>(line: S) -> Machine where S: Into<String>
+    {
+        let line = line.into();
         let words:Vec<&str> = line.split_whitespace().collect();
 
-        Machine{
+        Machine {
             id: words[0].to_string(),
             name: words[1].to_string(),
             provider: words[2].to_string(),
