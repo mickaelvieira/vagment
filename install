@@ -1,0 +1,46 @@
+#!/bin/bash
+
+set -e -u -o pipefail
+# set -x
+
+info() {
+    echo -e "\x1b[32m\xE2\x87\x92 $1\x1b[0m"
+}
+
+error() {
+    echo -e "\x1b[97m\x1b[41m\x21\x1b[0m \x1b[31m$1\x1b[0m" 1>&2
+    exit 1
+}
+
+is_install() {
+    command -v "$1" > /dev/null 2>&1 || error "'$1' (command not found)"
+}
+
+check_deps() {
+  is_install curl
+  is_install cargo
+}
+
+main() {
+    info "Checking dependencies..."
+    check_deps
+
+    info "Fetch source code..."
+    local tempdir=$(mktemp -d XXXXXX)
+    curl -s -L https://api.github.com/repos/mickaelvieira/vagment/tarball | tar -C $tempdir -xzf -
+    cd ${tempdir}/mickaelvieira-*
+    echo $(pwd)
+
+    info "Compiling application..."
+    cargo build --release
+
+    info "Clean up..."
+    mv target/release/vagment ..
+    cd ..
+    rm -rf mickaelvieira-*
+
+    info "Application ready..."
+    ./vagment --help
+}
+
+main
