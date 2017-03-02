@@ -7,6 +7,11 @@ use ansi_term::Colour::Yellow;
 
 use app::machine::Machine;
 
+pub fn is_vagrant_command(cmd: &str) -> bool {
+    let commands = list_commands!();
+    commands.contains(&cmd)
+}
+
 pub fn get_machines() -> Vec<Machine> {
     let child =
         Command::new("vagrant")
