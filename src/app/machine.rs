@@ -13,8 +13,7 @@ impl Machine {
     // Use of the Into Trait https://doc.rust-lang.org/nightly/core/convert/trait.Into.html
     // Let the caller to pass either a String or &str type
     // pub fn from_output_line<S: Into<String>>(line: S) -> Machine {
-    pub fn from_output_line<S>(line: S) -> Machine where S: Into<String>
-    {
+    pub fn from_output_line<S>(line: S) -> Machine where S: Into<String> {
         let line = line.into();
         let words:Vec<&str> = line.split_whitespace().collect();
 
@@ -27,8 +26,11 @@ impl Machine {
         }
     }
 
-    pub fn to_output(&self) {
+    pub fn get_path(&self) -> &str {
+        self.directory.as_str()
+    }
 
+    pub fn to_output(&self) {
         let output = format!(
             "{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}",
             self.id.as_str(),
