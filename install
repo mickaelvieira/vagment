@@ -25,12 +25,13 @@ main() {
     info "Checking dependencies..."
     check_deps
 
-    info "Fetch source code..."
     local tempdir=$(mktemp -d XXXXXX)
+
+    info "Fetch source code..."
     curl -s -L https://api.github.com/repos/mickaelvieira/vagment/tarball | tar -C $tempdir -xzf -
-    cd ${tempdir}/mickaelvieira-*
 
     info "Compiling application..."
+    cd ${tempdir}/mickaelvieira-*
     cargo build --release
 
     info "Cleaning up..."
