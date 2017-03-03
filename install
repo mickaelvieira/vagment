@@ -29,12 +29,11 @@ main() {
     local tempdir=$(mktemp -d XXXXXX)
     curl -s -L https://api.github.com/repos/mickaelvieira/vagment/tarball | tar -C $tempdir -xzf -
     cd ${tempdir}/mickaelvieira-*
-    echo $(pwd)
 
     info "Compiling application..."
     cargo build --release
 
-    info "Clean up..."
+    info "Cleaning up..."
     mv target/release/vagment ../..
     cd ../..
     rm -rf "${tempdir}/"
