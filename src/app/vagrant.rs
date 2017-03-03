@@ -1,13 +1,9 @@
 use std::process::Command;
 use std::process::Stdio;
 
-use ansi_term::Colour::Red;
-use ansi_term::Colour::Green;
-use ansi_term::Colour::Yellow;
-
 use app::machine::Machine;
 
-pub fn get_machines() -> Vec<Machine> {
+pub fn list() -> Vec<Machine> {
     let child =
         Command::new("vagrant")
             .arg("global-status")
@@ -28,9 +24,7 @@ pub fn get_machines() -> Vec<Machine> {
     lines.map(|line| Machine::from_output_line(line)).collect()
 }
 
-pub fn refresh_list() {
-    println!("{}", Green.paint("Refreshing machine listing"));
-
+pub fn refresh() -> Result<String, String> {
     let child =
         Command::new("vagrant")
             .arg("global-status")
@@ -44,33 +38,55 @@ pub fn refresh_list() {
         .wait_with_output()
         .expect("failed to wait on child");
 
-    if output.status.success() {
-        println!("{}", Green.paint("Command was executed successfully"));
-    } else {
-        println!("{}", Red.paint("Command exited with errors"));
+    if !output.status.success() {
+        return Err("Command exited with errors".to_string());
     }
+
+    Ok("Command was executed successfully".to_string())
 }
 
-pub fn execute_command(cmd: &str, path: &str) {
-    println!("{}", Green.paint(format!(
-        "Executing command vagrant {} in {}",
-        Yellow.paint(cmd),
-        Yellow.paint(path)
-    )));
-
+pub fn execute(command: &str, path: &str) -> Result<String, String> {
     let mut child =
         Command::new("vagrant")
             .current_dir(path)
             .stdout(Stdio::inherit())
             .stderr(Stdio::inherit())
-            .arg(cmd)
+            .arg(command)
             .spawn()
             .expect("failed to execute process");
 
-    let status = child.wait().expect("failed to wait on child");
-    if status.success() {
-        println!("{}", Green.paint("Command was executed successfully"));
-    } else {
-        println!("{}", Red.paint("Command exited with errors"));
+    let status = child
+        .wait()
+        .expect("failed to wait on child");
+
+    if !status.success() {
+        return Err("Command exited with errors".to_string());
     }
+
+    Ok("Command was executed successfully".to_string())
+}
+
+pub fn dump(path: &str) -> Result<String, String> {
+
+    let mut file = path.to_string();
+    file.push_str("/Vagrantfile");
+
+    let child =
+        Command::new("cat")
+            .current_dir(path)
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .arg(file)
+            .spawn()
+            .expect("failed to execute process");
+
+    let output = child
+        .wait_with_output()
+        .expect("failed to wait on child");
+
+    if !output.status.success() {
+        return Err("Command exited with errors".to_string());
+    }
+
+    Ok("Command was executed successfully".to_string())
 }
