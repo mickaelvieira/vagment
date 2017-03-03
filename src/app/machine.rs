@@ -13,7 +13,9 @@ impl Machine {
     // Use of the Into Trait https://doc.rust-lang.org/nightly/core/convert/trait.Into.html
     // Let the caller to pass either a String or &str type
     // pub fn from_output_line<S: Into<String>>(line: S) -> Machine {
-    pub fn from_output_line<S>(line: S) -> Machine where S: Into<String> {
+    pub fn from_output_line<S>(line: S) -> Machine
+        where S: Into<String>
+    {
         let line = line.into();
         let words:Vec<&str> = line.split_whitespace().collect();
 
