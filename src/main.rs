@@ -11,11 +11,11 @@ use ansi_term::Colour::Yellow;
 
 use std::io::{stdin, stdout, Write};
 
-use vagment::app::vagrant::*;
+use vagment::app::vagrant;
 use vagment::app::machine::Machine;
 
 fn init_cli<'a>() -> ArgMatches<'a> {
-    App::new("vagmatchesent")
+    App::new("vagment")
         .author(crate_authors!())
         .version(crate_version!())
         .arg(Arg::with_name("VAGRANT_COMMAND"))
@@ -29,7 +29,22 @@ fn init_cli<'a>() -> ArgMatches<'a> {
         .get_matches()
 }
 
-fn execute_vagrant_command(machines: &Vec<Machine>, command: &str, num: u16) {
+pub fn prompt_machine_number(machines: &Vec<Machine>) -> String {
+    print_list(machines);
+    print!("{}", Yellow.paint("Please enter a machine number
+-> "));
+
+    let _ = stdout().flush();
+
+    let mut input = String::new();
+    match stdin().read_line(&mut input) {
+        Ok(bytes) => bytes,
+        Err(error) => panic!("Could nout read input: {}", error)
+    };
+    input.trim().to_string()
+}
+
+fn process_command(machines: &Vec<Machine>, command: &str, num: u16) {
 
     let mut number = num;
 
@@ -57,43 +72,33 @@ fn execute_vagrant_command(machines: &Vec<Machine>, command: &str, num: u16) {
     let commands = list_commands!();
 
     if commands.contains(&command) {
-        execute_command(command, machine.get_path());
+        vagrant::execute_command(command, machine.get_path());
     } else {
         let message = format!("`{}` is not a valid command! Available commands are {}", command, commands.join(", "));
         panic!(message);
     }
 }
 
+pub fn print_list(machines: &Vec<Machine>) {
+    let output = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}", "Id", "Name", "Provider", "State", "Path");
 
-pub fn prompt_machine_number(machines: &Vec<Machine>) -> String {
-
-    // Prompt user
     print!("\n");
-    print_machine_list(machines);
+    println!("{}", Yellow.paint(output));
+    for machine in machines {
+        machine.to_output();
+    }
     print!("\n");
-    println!("{}", Yellow.paint("Please enter a machine number"));
-    print!("{}", Yellow.paint("-> "));
-
-    let _ = stdout().flush();
-
-    let mut input = String::new();
-    match stdin().read_line(&mut input) {
-        Ok(bytes) => bytes,
-        Err(error) => panic!("Could nout read input: {}", error)
-    };
-    input.trim().to_string()
 }
 
 fn main() {
     let matches = init_cli();
-    let machines = get_machines();
+    let machines = vagrant::get_machines();
 
     if matches.is_present("list") {
-        print_machine_list(&machines);
+        print_list(&machines);
     } else if matches.is_present("refresh") {
-        refresh_machine_list();
+        vagrant::refresh_list();
     } else {
-
         let cmd: &str = matches.value_of("VAGRANT_COMMAND")
             .unwrap_or("");
 
@@ -102,6 +107,6 @@ fn main() {
             .parse()
             .unwrap_or(0);
 
-        execute_vagrant_command(&machines, cmd, num);
+        process_command(&machines, cmd, num);
     }
 }

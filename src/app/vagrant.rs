@@ -1,6 +1,7 @@
 use std::process::Command;
 use std::process::Stdio;
 
+use ansi_term::Colour::Red;
 use ansi_term::Colour::Green;
 use ansi_term::Colour::Yellow;
 
@@ -11,10 +12,14 @@ pub fn get_machines() -> Vec<Machine> {
         Command::new("vagrant")
             .arg("global-status")
             .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
             .spawn()
             .expect("vagrant global-status failed");
 
-    let output = child.wait_with_output().unwrap();
+    let output = child
+        .wait_with_output()
+        .expect("failed to wait on child");
+
     let owned = String::from_utf8_lossy(&output.stdout).into_owned();
     let lines = owned.lines()
         .skip(2)
@@ -23,12 +28,27 @@ pub fn get_machines() -> Vec<Machine> {
     lines.map(|line| Machine::from_output_line(line)).collect()
 }
 
-pub fn refresh_machine_list() {
-    Command::new("vagrant")
-        .arg("global-status")
-        .arg("--prune")
-        .spawn()
-        .expect("vagrant global-status --prune failed");
+pub fn refresh_list() {
+    println!("{}", Green.paint("Refreshing machine listing"));
+
+    let child =
+        Command::new("vagrant")
+            .arg("global-status")
+            .arg("--prune")
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .expect("vagrant global-status --prune failed");
+
+    let output = child
+        .wait_with_output()
+        .expect("failed to wait on child");
+
+    if output.status.success() {
+        println!("{}", Green.paint("Command was executed successfully"));
+    } else {
+        println!("{}", Red.paint("Command exited with errors"));
+    }
 }
 
 pub fn execute_command(cmd: &str, path: &str) {
@@ -49,18 +69,8 @@ pub fn execute_command(cmd: &str, path: &str) {
 
     let status = child.wait().expect("failed to wait on child");
     if status.success() {
-        println!("Command was executed successfully");
+        println!("{}", Green.paint("Command was executed successfully"));
     } else {
-        println!("Command exited with errors");
-    }
-}
-
-pub fn print_machine_list(machines: &Vec<Machine>) {
-    let output = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}", "Id", "Name", "Provider", "State", "Path");
-
-    println!("{}", Yellow.paint(output));
-
-    for machine in machines {
-        machine.to_output();
+        println!("{}", Red.paint("Command exited with errors"));
     }
 }
