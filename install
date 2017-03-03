@@ -35,9 +35,9 @@ main() {
     cargo build --release
 
     info "Clean up..."
-    mv target/release/vagment ..
-    cd ..
-    rm -rf mickaelvieira-*
+    mv target/release/vagment ../..
+    cd ../..
+    rm -rf "${tempdir}/"
 
     info "Application ready..."
     ./vagment --help
