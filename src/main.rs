@@ -7,6 +7,10 @@ extern crate vagment;
 
 use clap::{Arg, App, SubCommand, ArgMatches};
 
+use ansi_term::Colour::Yellow;
+
+use std::io::{stdin, stdout, Write};
+
 use vagment::app::vagrant::*;
 use vagment::app::machine::Machine;
 
@@ -37,6 +41,7 @@ fn execute_vagrant_command(machines: &Vec<Machine>, command: &str, num: u16) {
         if machines.len() > 1 {
             let input = prompt_machine_number(&machines);
             number = input.parse().unwrap_or(0);
+            // @TODO need to handle the bad input properly
         } else {
             number = 1;
         }
@@ -57,6 +62,26 @@ fn execute_vagrant_command(machines: &Vec<Machine>, command: &str, num: u16) {
         let message = format!("`{}` is not a valid command! Available commands are {}", command, commands.join(", "));
         panic!(message);
     }
+}
+
+
+pub fn prompt_machine_number(machines: &Vec<Machine>) -> String {
+
+    // Prompt user
+    print!("\n");
+    print_machine_list(machines);
+    print!("\n");
+    println!("{}", Yellow.paint("Please enter a machine number"));
+    print!("{}", Yellow.paint("-> "));
+
+    let _ = stdout().flush();
+
+    let mut input = String::new();
+    match stdin().read_line(&mut input) {
+        Ok(bytes) => bytes,
+        Err(error) => panic!("Could nout read input: {}", error)
+    };
+    input.trim().to_string()
 }
 
 fn main() {

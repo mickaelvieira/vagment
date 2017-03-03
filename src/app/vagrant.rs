@@ -1,4 +1,3 @@
-use std::io;
 use std::process::Command;
 use std::process::Stdio;
 
@@ -6,11 +5,6 @@ use ansi_term::Colour::Green;
 use ansi_term::Colour::Yellow;
 
 use app::machine::Machine;
-
-pub fn is_vagrant_command(cmd: &str) -> bool {
-    let commands = list_commands!();
-    commands.contains(&cmd)
-}
 
 pub fn get_machines() -> Vec<Machine> {
     let child =
@@ -69,16 +63,4 @@ pub fn print_machine_list(machines: &Vec<Machine>) {
     for machine in machines {
         machine.to_output();
     }
-}
-
-pub fn prompt_machine_number(machines: &Vec<Machine>) -> String {
-
-    print_machine_list(machines);
-
-    let mut input = String::new();
-    match io::stdin().read_line(&mut input) {
-        Ok(bytes) => bytes,
-        Err(error) => panic!("Could nout read input: {}", error)
-    };
-    input.trim().to_string()
 }
