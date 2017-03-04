@@ -104,7 +104,7 @@ fn ask_machine_number(machines: &Vec<Machine>) -> String {
     let mut input = String::new();
     match stdin().read_line(&mut input) {
         Ok(bytes) => bytes,
-        Err(error) => panic!("Could nout read input: {}", error)
+        Err(error) => panic!("Could not read input: {}", error)
     };
     input.trim().to_string()
 }
