@@ -16,14 +16,9 @@ pub fn init_cli<'a>() -> ArgMatches<'a> {
         .arg(Arg::with_name("MACHINE_NUMBER"))
         .subcommand(SubCommand::with_name("dump")
             .arg(Arg::with_name("MACHINE_NUMBER"))
-            .about("Dump Vagrant file")
-        )
-        .subcommand(SubCommand::with_name("list")
-            .about("List available machines")
-        )
-        .subcommand(SubCommand::with_name("refresh")
-            .about("Clear vagrant cache")
-        )
+            .about("Dump Vagrant file"))
+        .subcommand(SubCommand::with_name("list").about("List available machines"))
+        .subcommand(SubCommand::with_name("refresh").about("Clear vagrant cache"))
         .get_matches()
 }
 
@@ -51,7 +46,9 @@ pub fn validate_number(machines: &Vec<Machine>, num: u16) -> Result<u16, String>
     Ok(number)
 }
 
-pub fn retrieve_machine_by_number(machines: &Vec<Machine>, number: u16) -> Result<&Machine, String> {
+pub fn retrieve_machine_by_number(machines: &Vec<Machine>,
+                                  number: u16)
+                                  -> Result<&Machine, String> {
 
     if number == 0 {
         return Err("Please enter a valid number".to_string());
@@ -71,21 +68,26 @@ pub fn process_command(machine: &Machine, command: &str) -> Result<String, Strin
     let commands = list_commands!();
 
     if !commands.contains(&command) {
-        return Err(
-            format!("`{}` is not a valid command! Available commands are {}", command, commands.join(", "))
-        );
+        return Err(format!("`{}` is not a valid command! Available commands are {}",
+                           command,
+                           commands.join(", ")));
     }
 
-    logger::info(
-        format!("Executing command vagrant {} in {}", Yellow.paint(command), Yellow.paint(machine.get_path()))
-    );
+    logger::info(format!("Executing command vagrant {} in {}",
+                         Yellow.paint(command),
+                         Yellow.paint(machine.get_path())));
 
     vagrant::execute(command, machine.get_path())
 }
 
 pub fn print_list(machines: &Vec<Machine>) {
 
-    let output = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}", "Id", "Name", "Provider", "State", "Path");
+    let output = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}",
+                         "Id",
+                         "Name",
+                         "Provider",
+                         "State",
+                         "Path");
 
     print!("\n");
     println!("{}", Yellow.paint(output));
@@ -104,7 +106,7 @@ fn ask_machine_number(machines: &Vec<Machine>) -> String {
     let mut input = String::new();
     match stdin().read_line(&mut input) {
         Ok(bytes) => bytes,
-        Err(error) => panic!("Could not read input: {}", error)
+        Err(error) => panic!("Could not read input: {}", error),
     };
     input.trim().to_string()
 }

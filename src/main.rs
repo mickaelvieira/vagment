@@ -9,7 +9,7 @@ use clap::ArgMatches;
 
 use std::process;
 
-use vagment::app::{self};
+use vagment::app;
 use vagment::app::logger;
 use vagment::app::vagrant;
 

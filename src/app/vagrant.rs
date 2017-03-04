@@ -4,16 +4,14 @@ use std::process::Stdio;
 use app::machine::Machine;
 
 pub fn list() -> Vec<Machine> {
-    let child =
-        Command::new("vagrant")
-            .arg("global-status")
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .spawn()
-            .expect("vagrant global-status failed");
+    let child = Command::new("vagrant")
+        .arg("global-status")
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("vagrant global-status failed");
 
-    let output = child
-        .wait_with_output()
+    let output = child.wait_with_output()
         .expect("failed to wait on child");
 
     let owned = String::from_utf8_lossy(&output.stdout).into_owned();
@@ -25,17 +23,15 @@ pub fn list() -> Vec<Machine> {
 }
 
 pub fn refresh() -> Result<String, String> {
-    let child =
-        Command::new("vagrant")
-            .arg("global-status")
-            .arg("--prune")
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .spawn()
-            .expect("vagrant global-status --prune failed");
+    let child = Command::new("vagrant")
+        .arg("global-status")
+        .arg("--prune")
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("vagrant global-status --prune failed");
 
-    let output = child
-        .wait_with_output()
+    let output = child.wait_with_output()
         .expect("failed to wait on child");
 
     if !output.status.success() {
@@ -46,17 +42,15 @@ pub fn refresh() -> Result<String, String> {
 }
 
 pub fn execute(command: &str, path: &str) -> Result<String, String> {
-    let mut child =
-        Command::new("vagrant")
-            .current_dir(path)
-            .stdout(Stdio::inherit())
-            .stderr(Stdio::inherit())
-            .arg(command)
-            .spawn()
-            .expect("failed to execute process");
+    let mut child = Command::new("vagrant")
+        .current_dir(path)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .arg(command)
+        .spawn()
+        .expect("failed to execute process");
 
-    let status = child
-        .wait()
+    let status = child.wait()
         .expect("failed to wait on child");
 
     if !status.success() {
@@ -71,17 +65,15 @@ pub fn dump(path: &str) -> Result<String, String> {
     let mut file = path.to_string();
     file.push_str("/Vagrantfile");
 
-    let child =
-        Command::new("cat")
-            .current_dir(path)
-            .stdout(Stdio::inherit())
-            .stderr(Stdio::inherit())
-            .arg(file)
-            .spawn()
-            .expect("failed to execute process");
+    let child = Command::new("cat")
+        .current_dir(path)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .arg(file)
+        .spawn()
+        .expect("failed to execute process");
 
-    let output = child
-        .wait_with_output()
+    let output = child.wait_with_output()
         .expect("failed to wait on child");
 
     if !output.status.success() {
