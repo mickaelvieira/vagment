@@ -26,38 +26,14 @@ fn main() {
     }
 
     if matches.is_present("dump") {
-        let result = app::validate_number(&machines, number);
-        if result.is_ok() {
-            let number = result.unwrap();
-            let result = app::retrieve_machine_by_number(&machines, number);
-            if result.is_ok() {
-                let machine = result.unwrap();
-                logger::log_result(app::dump_config(&machine));
-            } else {
-                logger::error(result.unwrap_err());
-            }
-        } else {
-            logger::error(result.unwrap_err());
-        }
+        logger::log_result(app::dump_configuration(&machines, number));
     } else if matches.is_present("list") {
         app::print_list(&machines);
     } else if matches.is_present("refresh") {
         logger::info("Refreshing machine listing");
         logger::log_result(vagrant::refresh());
     } else {
-        let result = app::validate_number(&machines, number);
-        if result.is_ok() {
-            let number = result.unwrap();
-            let result = app::retrieve_machine_by_number(&machines, number);
-            if result.is_ok() {
-                let machine = result.unwrap();
-                logger::log_result(app::process_command(&machine, command));
-            } else {
-                logger::error(result.unwrap_err());
-            }
-        } else {
-            logger::error(result.unwrap_err());
-        }
+        logger::log_result(app::process_command(&machines, command, number));
     }
 }
 

@@ -22,11 +22,53 @@ pub fn init_cli<'a>() -> ArgMatches<'a> {
         .get_matches()
 }
 
-pub fn dump_config(machine: &Machine) -> Result<String, String> {
+pub fn print_list(machines: &Vec<Machine>) {
+
+    let output = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}",
+                         "Id",
+                         "Name",
+                         "Provider",
+                         "State",
+                         "Path");
+
+    print!("\n");
+    println!("{}", Yellow.paint(output));
+    for machine in machines {
+        machine.to_output();
+    }
+    print!("\n");
+}
+
+pub fn dump_configuration(machines: &Vec<Machine>, number: u16) -> Result<String, String> {
+
+    let result = validate_number(&machines, number)?;
+    let machine = retrieve_machine_by_number(&machines, result)?;
     vagrant::dump(machine.get_path())
 }
 
-pub fn validate_number(machines: &Vec<Machine>, num: u16) -> Result<u16, String> {
+pub fn process_command(machines: &Vec<Machine>,
+                       command: &str,
+                       number: u16)
+                       -> Result<String, String> {
+
+    let result = validate_number(&machines, number)?;
+    let machine = retrieve_machine_by_number(&machines, result)?;
+    let commands = list_commands!();
+
+    if !commands.contains(&command) {
+        return Err(format!("`{}` is not a valid command! Available commands are {}",
+                           command,
+                           commands.join(", ")));
+    }
+
+    logger::info(format!("Executing command vagrant {} in {}",
+                         Yellow.paint(command),
+                         Yellow.paint(machine.get_path())));
+
+    vagrant::execute(command, machine.get_path())
+}
+
+fn validate_number(machines: &Vec<Machine>, num: u16) -> Result<u16, String> {
 
     let mut number: u16 = num;
 
@@ -46,9 +88,7 @@ pub fn validate_number(machines: &Vec<Machine>, num: u16) -> Result<u16, String>
     Ok(number)
 }
 
-pub fn retrieve_machine_by_number(machines: &Vec<Machine>,
-                                  number: u16)
-                                  -> Result<&Machine, String> {
+fn retrieve_machine_by_number(machines: &Vec<Machine>, number: u16) -> Result<&Machine, String> {
 
     if number == 0 {
         return Err("Please enter a valid number".to_string());
@@ -61,40 +101,6 @@ pub fn retrieve_machine_by_number(machines: &Vec<Machine>,
     }
 
     Ok(machines.get(index).unwrap())
-}
-
-pub fn process_command(machine: &Machine, command: &str) -> Result<String, String> {
-
-    let commands = list_commands!();
-
-    if !commands.contains(&command) {
-        return Err(format!("`{}` is not a valid command! Available commands are {}",
-                           command,
-                           commands.join(", ")));
-    }
-
-    logger::info(format!("Executing command vagrant {} in {}",
-                         Yellow.paint(command),
-                         Yellow.paint(machine.get_path())));
-
-    vagrant::execute(command, machine.get_path())
-}
-
-pub fn print_list(machines: &Vec<Machine>) {
-
-    let output = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}",
-                         "Id",
-                         "Name",
-                         "Provider",
-                         "State",
-                         "Path");
-
-    print!("\n");
-    println!("{}", Yellow.paint(output));
-    for machine in machines {
-        machine.to_output();
-    }
-    print!("\n");
 }
 
 fn ask_machine_number(machines: &Vec<Machine>) -> String {
