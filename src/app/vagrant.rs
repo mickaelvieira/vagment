@@ -1,7 +1,10 @@
 use std::process::Command;
 use std::process::Stdio;
+use std::result::Result;
 
 use app::machine::Machine;
+
+type CmdResult<T> = Result<T, String>;
 
 pub fn list() -> Vec<Machine> {
     let child = Command::new("vagrant")
@@ -22,7 +25,7 @@ pub fn list() -> Vec<Machine> {
     lines.map(|line| Machine::from_output_line(line)).collect()
 }
 
-pub fn refresh() -> Result<String, String> {
+pub fn refresh() -> CmdResult<String> {
     let child = Command::new("vagrant")
         .arg("global-status")
         .arg("--prune")
@@ -41,7 +44,7 @@ pub fn refresh() -> Result<String, String> {
     Ok("Command was executed successfully".to_string())
 }
 
-pub fn execute(command: &str, path: &str) -> Result<String, String> {
+pub fn execute(command: &str, path: &str) -> CmdResult<String> {
     let mut child = Command::new("vagrant")
         .current_dir(path)
         .stdout(Stdio::inherit())
@@ -60,7 +63,7 @@ pub fn execute(command: &str, path: &str) -> Result<String, String> {
     Ok("Command was executed successfully".to_string())
 }
 
-pub fn dump(path: &str) -> Result<String, String> {
+pub fn dump(path: &str) -> CmdResult<String> {
 
     let mut file = path.to_string();
     file.push_str("/Vagrantfile");
