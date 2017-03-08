@@ -1,8 +1,6 @@
-#[macro_use]
 extern crate clap;
 extern crate ansi_term;
 
-#[macro_use]
 extern crate vagment;
 
 use clap::ArgMatches;
@@ -37,7 +35,7 @@ fn main() {
     }
 }
 
-fn parse_machine_number<'a>(matches: &'a ArgMatches) -> u16 {
+fn parse_machine_number(matches: &ArgMatches) -> u16 {
     matches.value_of("MACHINE_NUMBER")
         .unwrap_or("0")
         .parse()

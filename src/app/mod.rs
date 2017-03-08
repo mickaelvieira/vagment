@@ -26,7 +26,7 @@ pub fn init_cli<'a>() -> ArgMatches<'a> {
         .get_matches()
 }
 
-pub fn print_list(machines: &Vec<Machine>) {
+pub fn print_list(machines: &[Machine]) {
 
     let output = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}",
                          "Id",
@@ -35,28 +35,28 @@ pub fn print_list(machines: &Vec<Machine>) {
                          "State",
                          "Path");
 
-    print!("\n");
+    println!("");
     println!("{}", Yellow.paint(output));
     for machine in machines {
         machine.to_output();
     }
-    print!("\n");
+    println!("");
 }
 
-pub fn dump_configuration(machines: &Vec<Machine>, number: u16) -> CmdResult<String> {
+pub fn dump_configuration(machines: &[Machine], number: u16) -> CmdResult<String> {
 
-    let result = validate_number(&machines, number)?;
-    let machine = retrieve_machine_by_number(&machines, result)?;
+    let result = validate_number(machines, number)?;
+    let machine = retrieve_machine_by_number(machines, result)?;
     vagrant::dump(machine.get_path())
 }
 
-pub fn process_command(machines: &Vec<Machine>,
+pub fn process_command(machines: &[Machine],
                        command: &str,
                        number: u16)
                        -> CmdResult<String> {
 
-    let result = validate_number(&machines, number)?;
-    let machine = retrieve_machine_by_number(&machines, result)?;
+    let result = validate_number(machines, number)?;
+    let machine = retrieve_machine_by_number(machines, result)?;
     let commands = list_commands!();
 
     if !commands.contains(&command) {
@@ -72,13 +72,13 @@ pub fn process_command(machines: &Vec<Machine>,
     vagrant::execute(command, machine.get_path())
 }
 
-fn validate_number(machines: &Vec<Machine>, num: u16) -> CmdResult<u16> {
+fn validate_number(machines: &[Machine], num: u16) -> CmdResult<u16> {
 
     let mut number: u16 = num;
 
     if number == 0 {
         if machines.len() > 1 {
-            let input = ask_for_machine_number(&machines);
+            let input = ask_for_machine_number(machines);
             number = input.parse().unwrap_or(0);
         } else {
             number = 1;
@@ -92,7 +92,7 @@ fn validate_number(machines: &Vec<Machine>, num: u16) -> CmdResult<u16> {
     Ok(number)
 }
 
-fn retrieve_machine_by_number(machines: &Vec<Machine>, number: u16) -> CmdResult<&Machine> {
+fn retrieve_machine_by_number(machines: &[Machine], number: u16) -> CmdResult<&Machine> {
     if number == 0 {
         return Err("Please enter a valid number".to_string());
     }
@@ -106,7 +106,7 @@ fn retrieve_machine_by_number(machines: &Vec<Machine>, number: u16) -> CmdResult
     Ok(machines.get(index).unwrap())
 }
 
-fn ask_for_machine_number(machines: &Vec<Machine>) -> String {
+fn ask_for_machine_number(machines: &[Machine]) -> String {
     print_list(machines);
     print!("{}", Yellow.paint("Please enter a machine number\n-> "));
 

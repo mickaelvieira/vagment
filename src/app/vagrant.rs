@@ -22,7 +22,7 @@ pub fn list() -> Vec<Machine> {
         .skip(2)
         .filter(|x| x.split_whitespace().count() == 5);
 
-    lines.map(|line| Machine::from_output_line(line)).collect()
+    lines.map(Machine::from_output_line).collect()
 }
 
 pub fn refresh() -> CmdResult<String> {
