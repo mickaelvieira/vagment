@@ -5,10 +5,12 @@ use std::result::Result;
 use clap::{Arg, App, SubCommand, ArgMatches};
 
 use app::machine::Machine;
+use app::vagrant::CmdType;
 
 pub mod logger;
 pub mod machine;
 pub mod vagrant;
+
 
 type CmdResult<T> = Result<T, String>;
 
@@ -68,6 +70,14 @@ pub fn process_command(machines: &[Machine],
     logger::info(format!("Executing command vagrant {} in {}",
                          Yellow.paint(command),
                          Yellow.paint(machine.get_path())));
+
+    if command.needs_machine_up() && !machine.is_running() {
+        logger::info("VM is not running, we are going to boot it up");
+        let result = vagrant::boot(machine.get_path());
+        if result.is_err() {
+            return result;
+        }
+    }
 
     vagrant::execute(command, machine.get_path())
 }

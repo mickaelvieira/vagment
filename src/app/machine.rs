@@ -41,4 +41,26 @@ impl Machine {
                              self.directory.as_str());
         println!("{}", Green.paint(output));
     }
+
+    pub fn is_running(&self) -> bool {
+        self.state == "running"
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    fn it_knows_when_the_vm_is_not_running() {
+        let m = Machine::from_output_line("00057e0 default virtualbox aborted /path/to/vm");
+        assert!(!m.is_running());
+    }
+
+    #[test]
+    fn it_knows_when_the_vm_is_running() {
+        let m = Machine::from_output_line("00057e0 default virtualbox running /path/to/vm");
+        assert!(m.is_running());
+    }
 }

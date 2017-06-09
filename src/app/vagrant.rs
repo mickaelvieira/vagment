@@ -6,6 +6,16 @@ use app::machine::Machine;
 
 type CmdResult<T> = Result<T, String>;
 
+pub trait CmdType {
+    fn needs_machine_up(&self) -> bool;
+}
+
+impl CmdType for str {
+    fn needs_machine_up(&self) -> bool {
+        self == "ssh"
+    }
+}
+
 pub fn list() -> Vec<Machine> {
     let child = Command::new("vagrant")
         .arg("global-status")
@@ -44,6 +54,25 @@ pub fn refresh() -> CmdResult<String> {
     Ok("Command was executed successfully".to_string())
 }
 
+pub fn boot(path: &str) -> CmdResult<String> {
+    let mut child = Command::new("vagrant")
+        .current_dir(path)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .arg("up")
+        .spawn()
+        .expect("failed to execute process");
+
+    let status = child.wait()
+        .expect("failed to wait on child");
+
+    if !status.success() {
+        return Err("Command exited with errors".to_string());
+    }
+
+    Ok("Command was executed successfully".to_string())
+}
+
 pub fn execute(command: &str, path: &str) -> CmdResult<String> {
     let mut child = Command::new("vagrant")
         .current_dir(path)
@@ -64,7 +93,6 @@ pub fn execute(command: &str, path: &str) -> CmdResult<String> {
 }
 
 pub fn dump(path: &str) -> CmdResult<String> {
-
     let mut file = path.to_string();
     file.push_str("/Vagrantfile");
 
