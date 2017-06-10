@@ -21,15 +21,17 @@ pub fn init_cli<'a>() -> ArgMatches<'a> {
         .arg(Arg::with_name("VAGRANT_COMMAND"))
         .arg(Arg::with_name("MACHINE_NUMBER"))
         .subcommand(SubCommand::with_name("dump")
-            .arg(Arg::with_name("MACHINE_NUMBER"))
-            .about("Dump Vagrant file"))
+                        .arg(Arg::with_name("MACHINE_NUMBER"))
+                        .about("Dump Vagrant file"))
+        .subcommand(SubCommand::with_name("edit")
+                        .arg(Arg::with_name("MACHINE_NUMBER"))
+                        .about("Edit Vagrant file"))
         .subcommand(SubCommand::with_name("list").about("List available machines"))
         .subcommand(SubCommand::with_name("refresh").about("Clear vagrant cache"))
         .get_matches()
 }
 
 pub fn print_list(machines: &[Machine]) {
-
     let output = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}",
                          "Id",
                          "Name",
@@ -45,18 +47,19 @@ pub fn print_list(machines: &[Machine]) {
     println!("");
 }
 
-pub fn dump_configuration(machines: &[Machine], number: u16) -> CmdResult<String> {
+pub fn edit_vagrant_file(machines: &[Machine], number: u16) -> CmdResult<String> {
+    let result = validate_number(machines, number)?;
+    let machine = retrieve_machine_by_number(machines, result)?;
+    vagrant::edit(machine.get_path())
+}
 
+pub fn dump_vagrant_file(machines: &[Machine], number: u16) -> CmdResult<String> {
     let result = validate_number(machines, number)?;
     let machine = retrieve_machine_by_number(machines, result)?;
     vagrant::dump(machine.get_path())
 }
 
-pub fn process_command(machines: &[Machine],
-                       command: &str,
-                       number: u16)
-                       -> CmdResult<String> {
-
+pub fn process_command(machines: &[Machine], command: &str, number: u16) -> CmdResult<String> {
     let result = validate_number(machines, number)?;
     let machine = retrieve_machine_by_number(machines, result)?;
     let commands = list_commands!();
@@ -83,7 +86,6 @@ pub fn process_command(machines: &[Machine],
 }
 
 fn validate_number(machines: &[Machine], num: u16) -> CmdResult<u16> {
-
     let mut number: u16 = num;
 
     if number == 0 {

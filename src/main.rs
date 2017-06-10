@@ -24,7 +24,9 @@ fn main() {
     }
 
     if matches.is_present("dump") {
-        logger::log_result(app::dump_configuration(&machines, number));
+        logger::log_result(app::dump_vagrant_file(&machines, number));
+    } else if matches.is_present("edit") {
+        logger::log_result(app::edit_vagrant_file(&machines, number));
     } else if matches.is_present("list") {
         app::print_list(&machines);
     } else if matches.is_present("refresh") {
@@ -36,7 +38,8 @@ fn main() {
 }
 
 fn parse_machine_number(matches: &ArgMatches) -> u16 {
-    matches.value_of("MACHINE_NUMBER")
+    matches
+        .value_of("MACHINE_NUMBER")
         .unwrap_or("0")
         .parse()
         .unwrap_or(0)
