@@ -33,13 +33,13 @@ pub fn print_list(machines: &[Machine]) {
 pub fn edit_vagrant_file(machines: &[Machine], number: u16) -> CmdResult<String> {
     let result = validate_number(machines, number)?;
     let machine = retrieve_machine_by_number(machines, result)?;
-    vagrant::edit(machine.get_path())
+    vagrant::edit(machine.get_path(), machine.get_vagrant_file_path())
 }
 
 pub fn dump_vagrant_file(machines: &[Machine], number: u16) -> CmdResult<String> {
     let result = validate_number(machines, number)?;
     let machine = retrieve_machine_by_number(machines, result)?;
-    vagrant::dump(machine.get_path())
+    vagrant::dump(machine.get_path(), machine.get_vagrant_file_path())
 }
 
 pub fn process_command(machines: &[Machine], command: &str, number: u16) -> CmdResult<String> {

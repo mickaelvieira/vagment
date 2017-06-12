@@ -79,10 +79,7 @@ pub fn execute(command: &str, path: &str) -> CmdResult<String> {
     Ok("Command was executed successfully".to_string())
 }
 
-pub fn dump(path: &str) -> CmdResult<String> {
-    let mut file = path.to_string();
-    file.push_str("/Vagrantfile");
-
+pub fn dump(path: &str, file: String) -> CmdResult<String> {
     let child = Command::new("cat")
         .current_dir(path)
         .stdout(Stdio::inherit())
@@ -100,10 +97,8 @@ pub fn dump(path: &str) -> CmdResult<String> {
     Ok("Command was executed successfully".to_string())
 }
 
-pub fn edit(path: &str) -> CmdResult<String> {
+pub fn edit(path: &str, file: String) -> CmdResult<String> {
     let editor = env::var_os("EDITOR");
-    let mut file = path.to_string();
-    file.push_str("/Vagrantfile");
 
     if editor.is_some() {
         let child = Command::new(editor.unwrap())

@@ -6,7 +6,7 @@ pub struct Machine {
     name: String,
     provider: String,
     state: String,
-    directory: String,
+    path: String,
 }
 
 impl Machine {
@@ -24,12 +24,19 @@ impl Machine {
             name: words[1].to_string(),
             provider: words[2].to_string(),
             state: words[3].to_string(),
-            directory: words[4].to_string(),
+            path: words[4].to_string(),
         }
     }
 
     pub fn get_path(&self) -> &str {
-        self.directory.as_str()
+        self.path.as_str()
+    }
+
+    pub fn get_vagrant_file_path(&self) -> String {
+        let mut file = self.path.clone();
+        file.push_str("/Vagrantfile");
+
+        file
     }
 
     pub fn to_output(&self) {
@@ -38,7 +45,7 @@ impl Machine {
                              self.name.as_str(),
                              self.provider.as_str(),
                              self.state.as_str(),
-                             self.directory.as_str());
+                             self.path.as_str());
         println!("{}", Green.paint(output));
     }
 
@@ -53,6 +60,18 @@ mod tests {
     use super::*;
 
     #[test]
+    fn it_retrieves_the_vm_path() {
+        let m = Machine::from_output_line("00057e0 default virtualbox aborted /path/to/vm");
+        assert_eq!(m.get_path(), "/path/to/vm");
+    }
+
+    #[test]
+    fn it_retrieves_the_vagrant_file_path() {
+        let m = Machine::from_output_line("00057e0 default virtualbox aborted /path/to/vm");
+        assert_eq!(m.get_vagrant_file_path(), "/path/to/vm/Vagrantfile");
+    }
+
+    #[test]
     fn it_knows_when_the_vm_is_not_running() {
         let m = Machine::from_output_line("00057e0 default virtualbox aborted /path/to/vm");
         assert!(!m.is_running());
@@ -60,7 +79,7 @@ mod tests {
 
     #[test]
     fn it_knows_when_the_vm_is_running() {
-        let m = Machine::from_output_line("00057e0 default virtualbox running /path/to/vm");
+        let m = Machine::from_output_line("00057e0 default virtualbox running /path/to/vm".to_string());
         assert!(m.is_running());
     }
 }

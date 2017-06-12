@@ -9,12 +9,11 @@ use vagment::app;
 use vagment::app::logger;
 use vagment::app::vagrant;
 use vagment::app::command::AppCommand;
-use vagment::app::cli;
 use vagment::app::args::AppArgs;
 
 fn main() {
-    let library = cli::init();
-    let matches = library.get_matches();
+    let cli = vagment::app::cli::init();
+    let matches = cli.get_matches();
     let machines = vagrant::list();
 
     let command = matches.vagrant_command();
@@ -25,11 +24,9 @@ fn main() {
         process::exit(1);
     }
 
-    if matches.has_subcommand() {
-        if let Some(subcommand) = matches.subcommand_name() {
-            if let Some(matches) = matches.subcommand_matches(subcommand) {
-                number = matches.machine_number();
-            }
+    if let Some(subcommand) = matches.subcommand_name() {
+        if let Some(matches) = matches.subcommand_matches(subcommand) {
+            number = matches.machine_number();
         }
     }
 
