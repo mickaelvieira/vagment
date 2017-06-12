@@ -5,7 +5,7 @@ A simple command line tool to manage Vagrant Virtual Machines.
 ## Installation
 
 ```
-$ curl -s -L -o - https://raw.githubusercontent.com/mickaelvieira/vagment/master/install | bash
+$ curl -s -L -o - https://raw.githubusercontent.com/mickaelvieira/vagment/master/bin/install | bash
 $ sudo mv vagment /usr/local/bin/vagment
 $ vagment --version
 ```
