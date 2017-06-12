@@ -3,12 +3,14 @@ use std::io::{stdin, stdout, Write};
 use std::result::Result;
 
 use app::machine::Machine;
-use app::vagrant::CmdType;
+use app::command::AppCommand;
 
 pub mod logger;
 pub mod machine;
 pub mod vagrant;
 pub mod cli;
+pub mod args;
+pub mod command;
 
 type CmdResult<T> = Result<T, String>;
 
@@ -45,7 +47,7 @@ pub fn process_command(machines: &[Machine], command: &str, number: u16) -> CmdR
     let machine = retrieve_machine_by_number(machines, result)?;
     let commands = list_commands!();
 
-    if !commands.contains(&command) {
+    if !command.is_valid() {
         return Err(format!("`{}` is not a valid command! Available commands are {}",
                            command,
                            commands.join(", ")));

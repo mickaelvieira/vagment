@@ -7,16 +7,6 @@ use app::machine::Machine;
 
 type CmdResult<T> = Result<T, String>;
 
-pub trait CmdType {
-    fn needs_machine_up(&self) -> bool;
-}
-
-impl CmdType for str {
-    fn needs_machine_up(&self) -> bool {
-        self == "ssh"
-    }
-}
-
 pub fn list() -> Vec<Machine> {
     let child = Command::new("vagrant")
         .arg("global-status")
@@ -28,8 +18,7 @@ pub fn list() -> Vec<Machine> {
     let output = child.wait_with_output().expect("failed to wait on child");
 
     let owned = String::from_utf8_lossy(&output.stdout).into_owned();
-    let lines = owned
-        .lines()
+    let lines = owned.lines()
         .skip(2)
         .filter(|x| x.split_whitespace().count() == 5);
 
