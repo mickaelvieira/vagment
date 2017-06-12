@@ -35,7 +35,6 @@ impl Machine {
     pub fn get_vagrant_file_path(&self) -> String {
         let mut file = self.path.clone();
         file.push_str("/Vagrantfile");
-
         file
     }
 
@@ -79,7 +78,7 @@ mod tests {
 
     #[test]
     fn it_knows_when_the_vm_is_running() {
-        let m = Machine::from_output_line("00057e0 default virtualbox running /path/to/vm".to_string());
+        let m = Machine::from_output_line("00057e0 default virtualbox running /path/to/vm");
         assert!(m.is_running());
     }
 }
