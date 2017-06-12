@@ -2,34 +2,15 @@ use ansi_term::Colour::Yellow;
 use std::io::{stdin, stdout, Write};
 use std::result::Result;
 
-use clap::{Arg, App, SubCommand, ArgMatches};
-
 use app::machine::Machine;
 use app::vagrant::CmdType;
 
 pub mod logger;
 pub mod machine;
 pub mod vagrant;
-
+pub mod cli;
 
 type CmdResult<T> = Result<T, String>;
-
-pub fn init_cli<'a>() -> ArgMatches<'a> {
-    App::new("vagment")
-        .author(crate_authors!())
-        .version(crate_version!())
-        .arg(Arg::with_name("VAGRANT_COMMAND"))
-        .arg(Arg::with_name("MACHINE_NUMBER"))
-        .subcommand(SubCommand::with_name("dump")
-                        .arg(Arg::with_name("MACHINE_NUMBER"))
-                        .about("Dump Vagrant file"))
-        .subcommand(SubCommand::with_name("edit")
-                        .arg(Arg::with_name("MACHINE_NUMBER"))
-                        .about("Edit Vagrant file"))
-        .subcommand(SubCommand::with_name("list").about("List available machines"))
-        .subcommand(SubCommand::with_name("refresh").about("Clear vagrant cache"))
-        .get_matches()
-}
 
 pub fn print_list(machines: &[Machine]) {
     let output = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}",

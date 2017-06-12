@@ -10,13 +10,15 @@ use std::process;
 use vagment::app;
 use vagment::app::logger;
 use vagment::app::vagrant;
+use vagment::app::cli;
 
 fn main() {
-    let matches = app::init_cli();
+    let library = cli::init();
+    let matches = library.get_matches();
     let machines = vagrant::list();
 
     let command = parse_vagrant_command(&matches);
-    let number = parse_machine_number(&matches);
+    let mut number = parse_machine_number(&matches);
 
     if machines.len() < 1 {
         logger::error("Could not find any vagrant machines available".to_string());
@@ -24,15 +26,21 @@ fn main() {
     }
 
     if matches.is_present("dump") {
+        if let Some(matches) = matches.subcommand_matches("dump") {
+            number = parse_machine_number(&matches);
+        }
         logger::log_result(app::dump_vagrant_file(&machines, number));
     } else if matches.is_present("edit") {
+        if let Some(matches) = matches.subcommand_matches("dump") {
+            number = parse_machine_number(&matches);
+        }
         logger::log_result(app::edit_vagrant_file(&machines, number));
     } else if matches.is_present("list") {
         app::print_list(&machines);
     } else if matches.is_present("refresh") {
         logger::info("Refreshing machine listing");
         logger::log_result(vagrant::refresh());
-    } else {
+    } else if command != "" {
         logger::log_result(app::process_command(&machines, command, number));
     }
 }
