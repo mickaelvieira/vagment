@@ -16,13 +16,13 @@ fn main() {
     let matches = cli.get_matches();
     let machines = vagrant::list();
 
-    let command = matches.vagrant_command();
-    let mut number = matches.machine_number();
-
     if machines.len() < 1 {
         logger::error("Could not find any vagrant machines available".to_string());
         process::exit(1);
     }
+
+    let command = matches.vagrant_command();
+    let mut number = matches.machine_number();
 
     if let Some(subcommand) = matches.subcommand_name() {
         if let Some(matches) = matches.subcommand_matches(subcommand) {
@@ -30,16 +30,21 @@ fn main() {
         }
     }
 
+    let result;
+
     if matches.is_present("dump") {
-        logger::log_result(app::dump_vagrant_file(&machines, number));
+        result = app::dump_vagrant_file(&machines, number);
     } else if matches.is_present("edit") {
-        logger::log_result(app::edit_vagrant_file(&machines, number));
+        result = app::edit_vagrant_file(&machines, number);
     } else if matches.is_present("list") {
-        app::print_list(&machines);
+        result = app::print_list(&machines);
     } else if matches.is_present("refresh") {
-        logger::info("Refreshing machine listing");
-        logger::log_result(vagrant::refresh());
+        result = vagrant::refresh();
     } else if command.is_valid() {
-        logger::log_result(app::process_command(&machines, command, number));
+        result = app::process_command(&machines, command, number);
+    } else {
+        result = Ok(String::new());
     }
+
+    logger::log_result(result);
 }

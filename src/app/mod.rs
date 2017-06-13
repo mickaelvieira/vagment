@@ -14,7 +14,7 @@ pub mod command;
 
 type CmdResult<T> = Result<T, String>;
 
-pub fn print_list(machines: &[Machine]) {
+pub fn print_list(machines: &[Machine]) -> CmdResult<String> {
     let output = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}",
                          "Id",
                          "Name",
@@ -28,6 +28,8 @@ pub fn print_list(machines: &[Machine]) {
         machine.to_output();
     }
     println!("");
+
+    Ok(String::from(""))
 }
 
 pub fn edit_vagrant_file(machines: &[Machine], number: u16) -> CmdResult<String> {
