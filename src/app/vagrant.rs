@@ -91,10 +91,10 @@ pub fn dump(path: &str, file: String) -> CmdResult<String> {
     let output = child.wait_with_output().expect("failed to wait on child");
 
     if !output.status.success() {
-        return Err("Command exited with errors".to_string());
+        Err("Command exited with errors".to_string())
+    } else {
+        Ok("Command was executed successfully".to_string())
     }
-
-    Ok("Command was executed successfully".to_string())
 }
 
 pub fn edit(path: &str, file: String) -> CmdResult<String> {
@@ -112,11 +112,11 @@ pub fn edit(path: &str, file: String) -> CmdResult<String> {
         let output = child.wait_with_output().expect("failed to wait on child");
 
         if !output.status.success() {
-            return Err("Command exited with errors".to_string());
+            Err("Command exited with errors".to_string())
+        } else {
+            Ok("Command was executed successfully".to_string())
         }
-
-        return Ok("Command was executed successfully".to_string());
     } else {
-        return Err("The environment variable EDITOR does not appear to be set".to_string());
+        Err("The environment variable EDITOR does not appear to be set".to_string())
     }
 }
