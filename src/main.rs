@@ -40,11 +40,15 @@ fn main() {
         result = app::print_list(&machines);
     } else if matches.is_present("refresh") {
         result = vagrant::refresh();
-    } else if command.is_valid() {
+    } else if command.is_vagrant_command() {
         result = app::process_command(&machines, command, number);
     } else {
         result = Ok(String::new());
     }
 
-    logger::log_result(result);
+    if result.is_err() {
+        logger::error(result.unwrap_err());
+    } else {
+        logger::info(result.unwrap());
+    }
 }

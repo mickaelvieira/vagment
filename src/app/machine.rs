@@ -1,6 +1,6 @@
 use ansi_term::Colour::Green;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Machine {
     id: String,
     name: String,
@@ -53,6 +53,27 @@ impl Machine {
     }
 }
 
+pub trait Machines {
+    fn get_machine_by_number(&self, number: u16) -> Option<&Machine>;
+}
+
+impl<'a> Machines for Vec<&'a Machine> {
+    fn get_machine_by_number(&self, number: u16) -> Option<&Machine> {
+        if number == 0 {
+            return None;
+        }
+
+        let index = (number - 1) as usize;
+        let machine = self.get(index);
+
+        if machine.is_none() {
+            None
+        } else {
+            Some(machine.unwrap())
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -80,5 +101,19 @@ mod tests {
     fn it_knows_when_the_vm_is_running() {
         let m = Machine::from_output_line("00057e0 default virtualbox running /path/to/vm");
         assert!(m.is_running());
+    }
+
+    #[test]
+    fn it_retrieves_a_vm_by_its_number() {
+        let m1 = Machine::from_output_line("00057e0 default virtualbox running /path/to/vm1");
+        let m2 = Machine::from_output_line("45457b5 default virtualbox poweroff /path/to/vm2");
+
+        let m: Vec<&Machine> = vec![&m1, &m2];
+
+        assert_eq!(m.get_machine_by_number(1), Some(&m1));
+        assert_eq!(m.get_machine_by_number(2), Some(&m2));
+        assert_eq!(m.get_machine_by_number(0), None);
+        assert_eq!(m.get_machine_by_number(3), None);
+        assert_eq!(m, vec![&m1, &m2]);
     }
 }

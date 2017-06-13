@@ -3,6 +3,7 @@ use std::io::{stdin, stdout, Write};
 use std::result::Result;
 
 use app::machine::Machine;
+// use app::machine::Machines;
 use app::command::AppCommand;
 
 pub mod logger;
@@ -35,6 +36,7 @@ pub fn print_list(machines: &[Machine]) -> CmdResult<String> {
 pub fn edit_vagrant_file(machines: &[Machine], number: u16) -> CmdResult<String> {
     let result = validate_number(machines, number)?;
     let machine = retrieve_machine_by_number(machines, result)?;
+    // let machine = machines.get_machine_by_number(result)?;
     vagrant::edit(machine.get_path(), machine.get_vagrant_file_path())
 }
 
@@ -49,7 +51,7 @@ pub fn process_command(machines: &[Machine], command: &str, number: u16) -> CmdR
     let machine = retrieve_machine_by_number(machines, result)?;
     let commands = list_commands!();
 
-    if !command.is_valid() {
+    if !command.is_vagrant_command() {
         return Err(format!("`{}` is not a valid command! Available commands are {}",
                            command,
                            commands.join(", ")));
@@ -104,15 +106,19 @@ fn retrieve_machine_by_number(machines: &[Machine], number: u16) -> CmdResult<&M
 }
 
 fn ask_for_machine_number(machines: &[Machine]) -> String {
-    print_list(machines);
-    print!("{}", Yellow.paint("Please enter a machine number\n-> "));
+    let result = print_list(machines);
+    if result.is_ok() {
+        print!("{}", Yellow.paint("Please enter a machine number\n-> "));
 
-    let _ = stdout().flush();
+        let _ = stdout().flush();
 
-    let mut input = String::new();
-    match stdin().read_line(&mut input) {
-        Ok(bytes) => bytes,
-        Err(error) => panic!("Could not read input: {}", error),
-    };
-    input.trim().to_string()
+        let mut input = String::new();
+        match stdin().read_line(&mut input) {
+            Ok(bytes) => bytes,
+            Err(error) => panic!("Could not read input: {}", error),
+        };
+        input.trim().to_string()
+    } else {
+        String::from("")
+    }
 }
