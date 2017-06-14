@@ -1,7 +1,6 @@
 
 use clap::{Arg, App, SubCommand};
 
-pub const ARG_COMMAND: &str = "vagrant_command";
 pub const ARG_NUMBER: &str = "machine_number";
 
 pub fn init<'a, 'b>() -> App<'a, 'b> {

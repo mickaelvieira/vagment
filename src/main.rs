@@ -16,8 +16,8 @@ use vagment::app::number::AppNumber;
 use vagment::app::args::AppArgs;
 
 fn main() {
-    let cli = vagment::app::cli::init();
-    let matches = cli.get_matches();
+    let mut cli = vagment::app::cli::init();
+    let matches = &cli.clone().get_matches();
     let machines = vagrant::get_machine_list();
 
     if machines.len() < 1 {
@@ -36,12 +36,17 @@ fn main() {
         }
     }
 
+    if command.is_empty() {
+        let _ = cli.print_help();
+        print!("\n");
+        process::exit(1);
+    }
+
     if command.needs_a_machine() {
         if !number.is_valid() {
             if machines.len() > 1 {
                 let list = machines.to_output();
-                let input = ask_for_machine_number(list);
-                number = input.parse().unwrap_or(0);
+                number = ask_for_machine_number(list);
             } else {
                 number = 1;
             }
@@ -76,14 +81,14 @@ fn main() {
             "destroy" => vagrant::execute(command, machine.get_path()),
             "dump" => vagrant::dump(machine.get_path(), machine.get_vagrant_file_path()),
             "edit" => vagrant::edit(machine.get_path(), machine.get_vagrant_file_path()),
-            _ => Err(format!("Unexpected invalid command 1 {:?}", command)),
+            _ => Err(format!("Invalid command {:?}", command)),
         }
     } else {
         result = match command {
             "list" => vagrant::print_list(machines),
             "refresh" => vagrant::refresh(),
             "shutdown" => vagrant::shutdown(machines.get_running_machines()),
-            _ => Err(format!("Unexpected invalid command 2 {:?}", command)),
+            _ => Err(format!("Invalid command {:?}", command)),
         }
     }
 
@@ -94,7 +99,7 @@ fn main() {
     }
 }
 
-fn ask_for_machine_number(list: String) -> String {
+fn ask_for_machine_number(list: String) -> u16 {
     println!("{}", list);
     print!("{}", Yellow.paint("Please enter a machine number\n-> "));
 
@@ -105,5 +110,5 @@ fn ask_for_machine_number(list: String) -> String {
         Ok(bytes) => bytes,
         Err(error) => panic!("Could not read input: {}", error),
     };
-    input.trim().to_string()
+    input.trim().to_string().parse().unwrap_or(0)
 }
