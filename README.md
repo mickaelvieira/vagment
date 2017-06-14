@@ -55,3 +55,7 @@ Execute one of the following vagrant commands against a given machine
 ```
 $ vagment <Vagrant command> <Machine Number>
 ```
+
+## License
+
+The MIT License (MIT). Please see [License File](https://github.com/mickaelvieira/vagment/tree/master/LICENSE.md) for more information.
