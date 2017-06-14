@@ -10,6 +10,8 @@ use std::io::{stdin, stdout, Write};
 
 use vagment::app::logger;
 use vagment::app::vagrant;
+use vagment::app::formatter;
+use vagment::app::machine::Machine;
 use vagment::app::machine::Machines;
 use vagment::app::command::AppCommand;
 use vagment::app::number::AppNumber;
@@ -45,8 +47,7 @@ fn main() {
     if command.needs_a_machine() {
         if !number.is_valid() {
             if machines.len() > 1 {
-                let list = machines.to_output();
-                number = ask_for_machine_number(list);
+                number = ask_for_machine_number(&machines);
             } else {
                 number = 1;
             }
@@ -99,9 +100,9 @@ fn main() {
     }
 }
 
-fn ask_for_machine_number(list: String) -> u16 {
-    println!("{}", list);
-    print!("{}", Yellow.paint("Please enter a machine number\n-> "));
+fn ask_for_machine_number(machines: &Vec<Machine>) -> u16 {
+    println!("{}", formatter::format(&machines));
+    print!("{}", Yellow.paint("Please enter a machine number: "));
 
     let _ = stdout().flush();
 

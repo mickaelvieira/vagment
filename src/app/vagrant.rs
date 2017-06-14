@@ -4,7 +4,7 @@ use std::process::Stdio;
 use std::result::Result;
 
 use app::machine::Machine;
-use app::machine::Machines;
+use app::formatter;
 
 type CmdResult<T> = Result<T, String>;
 
@@ -26,7 +26,7 @@ pub fn get_machine_list() -> Vec<Machine> {
 }
 
 pub fn print_list(machines: Vec<Machine>) -> CmdResult<String> {
-    println!("{}", machines.to_output());
+    println!("{}", formatter::format(&machines));
     Ok(String::from(""))
 }
 

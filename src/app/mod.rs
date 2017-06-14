@@ -5,3 +5,4 @@ pub mod cli;
 pub mod args;
 pub mod command;
 pub mod number;
+pub mod formatter;

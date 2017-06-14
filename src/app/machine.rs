@@ -1,6 +1,3 @@
-use ansi_term::Colour::Green;
-use ansi_term::Colour::Yellow;
-
 #[derive(Debug, PartialEq, Clone)]
 pub struct Machine {
     id: String,
@@ -26,24 +23,22 @@ impl Machine {
         }
     }
 
+    pub fn get_name(&self) -> &str {
+        self.name.as_str()
+    }
+
     pub fn get_path(&self) -> &str {
         self.path.as_str()
+    }
+
+    pub fn get_state(&self) -> &str {
+        self.state.as_str()
     }
 
     pub fn get_vagrant_file_path(&self) -> String {
         let mut file = self.path.clone();
         file.push_str("/Vagrantfile");
         file
-    }
-
-    pub fn to_output(&self) -> String {
-        let output = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}",
-                             self.id.as_str(),
-                             self.name.as_str(),
-                             self.provider.as_str(),
-                             self.state.as_str(),
-                             self.path.as_str());
-        format!("{}", Green.paint(output))
     }
 
     pub fn is_running(&self) -> bool {
@@ -53,7 +48,6 @@ impl Machine {
 
 pub trait Machines {
     fn get_machine_by_number(&self, number: u16) -> Option<&Machine>;
-    fn to_output(&self) -> String;
     fn get_running_machines(&self) -> Vec<Machine>;
 }
 
@@ -65,25 +59,6 @@ impl Machines for Vec<Machine> {
 
         let index = (number - 1) as usize;
         self.get(index)
-    }
-
-    fn to_output(&self) -> String {
-        let o = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}",
-                        "Id",
-                        "Name",
-                        "Provider",
-                        "State",
-                        "Path");
-
-        let mut lines = Vec::new();
-        let header = format!("{}", Yellow.paint(o));
-
-        lines.push(header);
-        for machine in self {
-            lines.push(machine.to_output());
-        }
-
-        lines.join("\n")
     }
 
     fn get_running_machines(&self) -> Vec<Machine> {
@@ -103,6 +78,18 @@ mod tests {
     fn it_retrieves_the_vm_path() {
         let m = Machine::from_output_line("00057e0 default virtualbox aborted /path/to/vm");
         assert_eq!(m.get_path(), "/path/to/vm");
+    }
+
+    #[test]
+    fn it_retrieves_the_vm_name() {
+        let m = Machine::from_output_line("00057e0 default virtualbox aborted /path/to/vm");
+        assert_eq!(m.get_name(), "default");
+    }
+
+    #[test]
+    fn it_retrieves_the_vm_state() {
+        let m = Machine::from_output_line("00057e0 default virtualbox aborted /path/to/vm");
+        assert_eq!(m.get_state(), "aborted");
     }
 
     #[test]
