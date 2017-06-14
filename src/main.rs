@@ -8,10 +8,8 @@ use std::process;
 use ansi_term::Colour::Yellow;
 use std::io::{stdin, stdout, Write};
 
-use vagment::app;
 use vagment::app::logger;
 use vagment::app::vagrant;
-// use vagment::app::machine::Machine;
 use vagment::app::machine::Machines;
 use vagment::app::command::AppCommand;
 use vagment::app::number::AppNumber;
@@ -27,7 +25,7 @@ fn main() {
         process::exit(1);
     }
 
-    let result;
+    let mut result;
     let mut command = matches.vagrant_command();
     let mut number = matches.machine_number();
 
@@ -38,7 +36,7 @@ fn main() {
         }
     }
 
-    if command.needs_machine_number() && !number.is_valid() {
+    if command.needs_a_machine() && !number.is_valid() {
         if machines.len() > 1 {
             let list = machines.to_output();
             let input = ask_for_machine_number(list);
@@ -48,21 +46,39 @@ fn main() {
         }
     }
 
-    println!("{:?}", command);
-    println!("{:?}", number);
+    if command.needs_a_machine() {
+        let search = machines.get_machine_by_number(number);
 
-    if command.needs_machine_number() && !number.is_valid() {
-        logger::error("Unexpected invalid machine number".to_string());
-        process::exit(1);
-    }
+        if search.is_none() {
+            logger::error("Unexpected invalid machine number".to_string());
+            process::exit(1);
+        }
 
-    if command.is_vagrant_command() {
-        result = app::process_command(machines, command, number);
+        let machine = search.unwrap();
+
+        if command.is_vagrant_command() {
+            if command.needs_machine_up() && !machine.is_running() {
+                logger::info("VM is not running, we are going to boot it up");
+                result = vagrant::boot(machine.get_path());
+                if result.is_ok() {
+                    result = vagrant::execute(command, machine.get_path());
+                }
+            } else {
+                result = vagrant::execute(command, machine.get_path());
+            }
+        } else {
+            result = match command {
+                "dump" => vagrant::dump(machine.get_path(), machine.get_vagrant_file_path()),
+                "edit" => vagrant::edit(machine.get_path(), machine.get_vagrant_file_path()),
+                _ => Err(format!("Unexpected invalid command {:?}", command)),
+            }
+        }
     } else {
         result = match command {
-            "dump" => app::dump_vagrant_file(machines, number),
-            "edit" => app::edit_vagrant_file(machines, number),
-            "list" => app::print_list(machines),
+            "list" => {
+                println!("{}", machines.to_output());
+                Ok(String::from(""))
+            }
             "refresh" => vagrant::refresh(),
             _ => Err(format!("Unexpected invalid command {:?}", command)),
         }
@@ -75,7 +91,7 @@ fn main() {
     }
 }
 
-fn ask_for_machine_number(list:String) -> String {
+fn ask_for_machine_number(list: String) -> String {
     println!("{}", list);
     print!("{}", Yellow.paint("Please enter a machine number\n-> "));
 

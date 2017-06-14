@@ -1,6 +1,6 @@
 pub trait AppCommand {
     fn needs_machine_up(&self) -> bool;
-    fn needs_machine_number(&self) -> bool;
+    fn needs_a_machine(&self) -> bool;
     fn is_vagrant_command(&self) -> bool;
 }
 
@@ -9,7 +9,7 @@ impl AppCommand for str {
         self == "ssh"
     }
 
-    fn needs_machine_number(&self) -> bool {
+    fn needs_a_machine(&self) -> bool {
         self.is_vagrant_command() || self == "dump" || self == "edit"
     }
 
@@ -45,17 +45,17 @@ mod tests {
 
     #[test]
     fn it_knows_when_it_needs_the_machine_number() {
-        assert!("up".needs_machine_number());
-        assert!("halt".needs_machine_number());
-        assert!("ssh".needs_machine_number());
-        assert!("destroy".needs_machine_number());
-        assert!("status".needs_machine_number());
-        assert!("suspend".needs_machine_number());
-        assert!("reload".needs_machine_number());
-        assert!("resume".needs_machine_number());
-        assert!("dump".needs_machine_number());
-        assert!("edit".needs_machine_number());
-        assert!(!"refresh".needs_machine_number());
-        assert!(!"list".needs_machine_number());
+        assert!("up".needs_a_machine());
+        assert!("halt".needs_a_machine());
+        assert!("ssh".needs_a_machine());
+        assert!("destroy".needs_a_machine());
+        assert!("status".needs_a_machine());
+        assert!("suspend".needs_a_machine());
+        assert!("reload".needs_a_machine());
+        assert!("resume".needs_a_machine());
+        assert!("dump".needs_a_machine());
+        assert!("edit".needs_a_machine());
+        assert!(!"refresh".needs_a_machine());
+        assert!(!"list".needs_a_machine());
     }
 }

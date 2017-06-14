@@ -11,9 +11,6 @@ pub struct Machine {
 }
 
 impl Machine {
-    // Use of the Into Trait https://doc.rust-lang.org/nightly/core/convert/trait.Into.html
-    // Let the caller to pass either a String or &str type
-    // pub fn from_output_line<S: Into<String>>(line: S) -> Machine {
     pub fn from_output_line<S>(line: S) -> Machine
         where S: Into<String>
     {
@@ -66,22 +63,16 @@ impl Machines for Vec<Machine> {
         }
 
         let index = (number - 1) as usize;
-        let machine = self.get(index);
-
-        if machine.is_none() {
-            None
-        } else {
-            Some(machine.unwrap())
-        }
+        self.get(index)
     }
 
     fn to_output(&self) -> String {
         let o = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10} | {4: ^10}",
-                             "Id",
-                             "Name",
-                             "Provider",
-                             "State",
-                             "Path");
+                        "Id",
+                        "Name",
+                        "Provider",
+                        "State",
+                        "Path");
 
         let mut lines = Vec::new();
         let header = format!("{}", Yellow.paint(o));
