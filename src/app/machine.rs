@@ -1,7 +1,7 @@
 use ansi_term::Colour::Green;
 use ansi_term::Colour::Yellow;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Machine {
     id: String,
     name: String,
@@ -54,6 +54,7 @@ impl Machine {
 pub trait Machines {
     fn get_machine_by_number(&self, number: u16) -> Option<&Machine>;
     fn to_output(&self) -> String;
+    fn get_running_machines(&self) -> Vec<Machine>;
 }
 
 impl Machines for Vec<Machine> {
@@ -83,6 +84,13 @@ impl Machines for Vec<Machine> {
         }
 
         lines.join("\n")
+    }
+
+    fn get_running_machines(&self) -> Vec<Machine> {
+         self.iter()
+            .filter(|m| m.is_running())
+            .map(|m| m.clone())
+            .collect()
     }
 }
 
@@ -114,18 +122,33 @@ mod tests {
         let m = Machine::from_output_line("00057e0 default virtualbox running /path/to/vm");
         assert!(m.is_running());
     }
-    //
-    // #[test]
-    // fn it_retrieves_a_vm_by_its_number() {
-    //     let m1 = Machine::from_output_line("00057e0 default virtualbox running /path/to/vm1");
-    //     let m2 = Machine::from_output_line("45457b5 default virtualbox poweroff /path/to/vm2");
-    //
-    //     let m: Vec<Machine> = vec![m1, m2];
-    //
-    //     assert_eq!(m.get_machine_by_number(1), Some(&m1));
-    //     // assert_eq!(m.get_machine_by_number(2), Some(&m2));
-    //     // assert_eq!(m.get_machine_by_number(0), None);
-    //     // assert_eq!(m.get_machine_by_number(3), None);
-    //     // assert_eq!(m, vec![&m1, &m2]);
-    // }
+
+    #[test]
+    fn it_retrieves_a_vm_by_its_number() {
+        let m1 = Machine::from_output_line("00057e0 default virtualbox running /path/to/vm1");
+        let m2 = Machine::from_output_line("45457b5 default virtualbox poweroff /path/to/vm2");
+
+        let mut m = Vec::new();
+        m.push(m1);
+        m.push(m2);
+
+        assert_eq!(m.get_machine_by_number(1), Some(&m[0]));
+        assert_eq!(m.get_machine_by_number(2), Some(&m[1]));
+        assert_eq!(m.get_machine_by_number(0), None);
+        assert_eq!(m.get_machine_by_number(3), None);
+    }
+
+    #[test]
+    fn it_returns_a_vector_with_only_the_running_machines() {
+        let m0 = Machine::from_output_line("00057e0 default virtualbox running /path/to/vm1");
+        let m1 = Machine::from_output_line("00057e0 default virtualbox running /path/to/vm1");
+        let m2 = Machine::from_output_line("45457b5 default virtualbox poweroff /path/to/vm2");
+
+        let mut m = Vec::new();
+        m.push(m1);
+        m.push(m2);
+
+        let r = m.get_running_machines();
+        assert_eq!(r, vec![m0]);
+    }
 }
