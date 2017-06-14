@@ -56,6 +56,13 @@ Execute one of the following vagrant commands against a given machine
 $ vagment <Vagrant command> <Machine Number>
 ```
 
+Or simply
+
+```
+$ vagment <Vagrant command>
+```
+***NOTE***: If you have more than one virtual machine, you will be prompted for the machine number.
+
 ## License
 
 The MIT License (MIT). Please see [License File](https://github.com/mickaelvieira/vagment/tree/master/LICENSE.md) for more information.
