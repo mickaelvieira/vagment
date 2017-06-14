@@ -18,13 +18,39 @@ List all the virtual machines
 $ vagment list
 ```
 
+Halt all the virtual machines
+
+```
+$ vagment shutdown
+```
+
+Refresh [global status](https://www.vagrantup.com/docs/cli/global-status.html) command's cache
+
+```
+$ vagment refresh
+```
+
 Dump the `Vagrantfile`
 
 ```
 $ vagment dump <Machine Number>
 ```
 
-Execute a vagrant command against a given machine
+Open the `Vagrantfile` in your favourite `$EDITOR`
+
+```
+$ vagment edit <Machine Number>
+```
+
+Execute one of the following vagrant commands against a given machine
+- up
+- ssh
+- halt
+- reload
+- resume
+- status
+- destroy
+- suspend
 
 ```
 $ vagment <Vagrant command> <Machine Number>
