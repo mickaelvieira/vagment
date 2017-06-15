@@ -1,12 +1,12 @@
 extern crate clap;
 extern crate ansi_term;
-
 extern crate vagment;
 
-use std::process;
+use std::io::{stdin, stdout, Write};
+
+use clap::ArgMatches;
 
 use ansi_term::Colour::Yellow;
-use std::io::{stdin, stdout, Write};
 
 use vagment::app::logger;
 use vagment::app::vagrant;
@@ -18,85 +18,53 @@ use vagment::app::number::AppNumber;
 use vagment::app::args::AppArgs;
 
 fn main() {
-    let mut cli = vagment::app::cli::init();
-    let matches = &cli.clone().get_matches();
+    let cli = vagment::app::cli::init();
+    let matches = cli.get_matches();
     let machines = vagrant::get_machine_list();
 
-    if machines.len() < 1 {
-        logger::error("Could not find any vagrant machines available".to_string());
-        process::exit(1);
+    match parse(matches, &machines) {
+        Ok((command, number)) => {
+            match run(command, number, machines) {
+                Ok(m) => {
+                    logger::info(m);
+                    std::process::exit(0);
+                }
+                Err(e) => {
+                    logger::error(e);
+                    std::process::exit(1);
+                }
+            }
+        }
+        Err(e) => {
+            logger::error(e);
+            std::process::exit(1);
+        }
     }
+}
 
-    let result;
+fn parse(matches: ArgMatches, machines: &Vec<Machine>) -> Result<(String, u16), String> {
     let mut number = 0;
-    let mut command = "";
+    let mut command = String::from("");
 
     if let Some(subcommand) = matches.subcommand_name() {
+        command = subcommand.to_string();
         if let Some(matches) = matches.subcommand_matches(subcommand) {
-            command = subcommand;
-            number = matches.machine_number();
+            number = matches.parse_machine_number();
+        }
+    }
+
+    if command.needs_a_machine() && !number.is_valid() {
+        if machines.len() > 1 {
+            number = ask_for_machine_number(&machines);
+        } else {
+            number = 1;
         }
     }
 
     if command.is_empty() {
-        let _ = cli.print_help();
-        print!("\n");
-        process::exit(1);
-    }
-
-    if command.needs_a_machine() {
-        if !number.is_valid() {
-            if machines.len() > 1 {
-                number = ask_for_machine_number(&machines);
-            } else {
-                number = 1;
-            }
-        }
-
-        let search = machines.get_machine_by_number(number);
-
-        if search.is_none() {
-            logger::error("Unexpected invalid machine number".to_string());
-            process::exit(1);
-        }
-
-        let machine = search.unwrap();
-
-        if command.needs_machine_up() && !machine.is_running() {
-            logger::info("VM is not running, we are going to boot it up");
-            let r = vagrant::boot(machine.get_path());
-            if r.is_err() {
-                logger::error("Could not boot the machine".to_string());
-                process::exit(1);
-            }
-        }
-
-        result = match command {
-            "up" => vagrant::execute(command, machine.get_path()),
-            "ssh" => vagrant::execute(command, machine.get_path()),
-            "halt" => vagrant::execute(command, machine.get_path()),
-            "status" => vagrant::execute(command, machine.get_path()),
-            "resume" => vagrant::execute(command, machine.get_path()),
-            "reload" => vagrant::execute(command, machine.get_path()),
-            "suspend" => vagrant::execute(command, machine.get_path()),
-            "destroy" => vagrant::execute(command, machine.get_path()),
-            "dump" => vagrant::dump(machine.get_path(), machine.get_vagrant_file_path()),
-            "edit" => vagrant::edit(machine.get_path(), machine.get_vagrant_file_path()),
-            _ => Err(format!("Invalid command {:?}", command)),
-        }
+        Err("Please provide a command to run. For more information try --help".to_string())
     } else {
-        result = match command {
-            "list" => vagrant::print_list(machines),
-            "refresh" => vagrant::refresh(),
-            "shutdown" => vagrant::shutdown(machines.get_running_machines()),
-            _ => Err(format!("Invalid command {:?}", command)),
-        }
-    }
-
-    if result.is_err() {
-        logger::error(result.unwrap_err());
-    } else {
-        logger::info(result.unwrap());
+        Ok((command, number))
     }
 }
 
@@ -112,4 +80,48 @@ fn ask_for_machine_number(machines: &Vec<Machine>) -> u16 {
         Err(error) => panic!("Could not read input: {}", error),
     };
     input.trim().to_string().parse().unwrap_or(0)
+}
+
+fn run(cmd: String, number: u16, machines: Vec<Machine>) -> Result<String, String> {
+    let command = cmd.as_str();
+    if machines.len() < 1 {
+        return Err("Could not find any vagrant machines available".to_string());
+    }
+
+    if command.needs_a_machine() {
+        let search = machines.get_machine_by_number(number);
+        if search.is_none() {
+            return Err("Unexpected invalid machine number".to_string());
+        }
+
+        let machine = search.unwrap();
+
+        if command.needs_machine_up() && !machine.is_running() {
+            logger::info("VM is not running, we are going to boot it up");
+            if let Err(_) = vagrant::boot(machine.get_path()) {
+                return Err("Could not boot the machine".to_string());
+            }
+        }
+
+        match command {
+            "up" => vagrant::execute(command, machine.get_path()),
+            "ssh" => vagrant::execute(command, machine.get_path()),
+            "halt" => vagrant::execute(command, machine.get_path()),
+            "status" => vagrant::execute(command, machine.get_path()),
+            "resume" => vagrant::execute(command, machine.get_path()),
+            "reload" => vagrant::execute(command, machine.get_path()),
+            "suspend" => vagrant::execute(command, machine.get_path()),
+            "destroy" => vagrant::execute(command, machine.get_path()),
+            "dump" => vagrant::dump(machine.get_path(), machine.get_vagrant_file_path()),
+            "edit" => vagrant::edit(machine.get_path(), machine.get_vagrant_file_path()),
+            _ => Err(format!("Invalid command {:?}", command)),
+        }
+    } else {
+        match command {
+            "list" => vagrant::print_list(machines),
+            "refresh" => vagrant::refresh(),
+            "shutdown" => vagrant::shutdown(machines.get_running_machines()),
+            _ => Err(format!("Invalid command {:?}", command)),
+        }
+    }
 }

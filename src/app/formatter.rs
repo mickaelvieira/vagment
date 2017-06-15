@@ -18,12 +18,12 @@ fn get_header() -> String {
 
 fn get_machine_line(index: usize, machine: &Machine) -> String {
     let line = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10}",
-                         index + 1,
-                         machine.get_name(),
-                         machine.get_state(),
-                         machine.get_path());
+                       index + 1,
+                       machine.get_name(),
+                       machine.get_state(),
+                       machine.get_path());
 
-     format!("{}", Green.paint(line))
+    format!("{}", Green.paint(line))
 }
 
 fn get_separator() -> String {

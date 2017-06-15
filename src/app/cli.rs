@@ -1,4 +1,3 @@
-
 use clap::{Arg, App, SubCommand};
 
 pub const ARG_NUMBER: &str = "machine_number";
@@ -37,13 +36,7 @@ pub fn init<'a, 'b>() -> App<'a, 'b> {
         .subcommand(SubCommand::with_name("edit")
             .arg(Arg::with_name(ARG_NUMBER))
             .about("Edit Vagrant file"))
-        .subcommand(SubCommand::with_name("list")
-            .about("List available machines")
-        )
-        .subcommand(SubCommand::with_name("refresh")
-            .about("Clear vagrant cache")
-        )
-        .subcommand(SubCommand::with_name("shutdown")
-            .about("Shutdown all running machines")
-        )
+        .subcommand(SubCommand::with_name("list").about("List available machines"))
+        .subcommand(SubCommand::with_name("refresh").about("Clear vagrant cache"))
+        .subcommand(SubCommand::with_name("shutdown").about("Shutdown all running machines"))
 }

@@ -32,11 +32,15 @@ pub fn print_list(machines: Vec<Machine>) -> CmdResult<String> {
 
 pub fn shutdown(machines: Vec<Machine>) -> CmdResult<String> {
     for machine in machines {
-        Command::new("vagrant")
+        let mut child = Command::new("vagrant")
             .current_dir(machine.get_path())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
             .arg("halt")
             .spawn()
             .expect("failed");
+
+        let _ = child.wait().expect("failed to wait on child");
     }
 
     Ok(String::from(""))

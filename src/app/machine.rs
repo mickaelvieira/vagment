@@ -62,7 +62,7 @@ impl Machines for Vec<Machine> {
     }
 
     fn get_running_machines(&self) -> Vec<Machine> {
-         self.iter()
+        self.iter()
             .filter(|m| m.is_running())
             .map(|m| m.clone())
             .collect()
