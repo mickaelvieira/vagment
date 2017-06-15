@@ -4,6 +4,11 @@ A simple command line tool to manage Vagrant Virtual Machines.
 
 ## Installation
 
+##### Dependencies
+- [rust](https://www.rust-lang.org/en-US/install.html)
+- [cargo](https://github.com/rust-lang/cargo)
+- [curl](https://curl.haxx.se/docs/)
+
 ```
 $ curl -s -L -o - https://raw.githubusercontent.com/mickaelvieira/vagment/master/bin/install | bash
 $ sudo mv vagment /usr/local/bin/vagment

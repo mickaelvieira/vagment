@@ -92,7 +92,7 @@ fn run(cmd: String, number: u16, machines: Vec<Machine>) -> Result<String, Strin
     if command.needs_a_machine() {
         let search = machines.get_machine_by_number(number);
         if search.is_none() {
-            return Err("Unexpected invalid machine number".to_string());
+            return Err("Invalid machine number".to_string());
         }
 
         let machine = search.unwrap();
