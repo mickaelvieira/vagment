@@ -5,8 +5,9 @@ use std::result::Result;
 
 use app::machine::Machine;
 use app::formatter;
+use app::errors::CommandError;
 
-type CmdResult<T> = Result<T, String>;
+type CommandResult<T> = Result<T, CommandError>;
 
 pub fn get_machine_list() -> Vec<Machine> {
     let child = Command::new("vagrant")
@@ -25,12 +26,12 @@ pub fn get_machine_list() -> Vec<Machine> {
     lines.map(Machine::from_output_line).collect()
 }
 
-pub fn print_list(machines: Vec<Machine>) -> CmdResult<String> {
+pub fn print_list(machines: Vec<Machine>) -> CommandResult<String> {
     println!("{}", formatter::format(&machines));
     Ok(String::from(""))
 }
 
-pub fn shutdown(machines: Vec<Machine>) -> CmdResult<String> {
+pub fn shutdown(machines: Vec<Machine>) -> CommandResult<String> {
     for machine in machines {
         let mut child = Command::new("vagrant")
             .current_dir(machine.get_path())
@@ -46,7 +47,7 @@ pub fn shutdown(machines: Vec<Machine>) -> CmdResult<String> {
     Ok(String::from(""))
 }
 
-pub fn refresh() -> CmdResult<String> {
+pub fn refresh() -> CommandResult<String> {
     let child = Command::new("vagrant")
         .arg("global-status")
         .arg("--prune")
@@ -58,13 +59,13 @@ pub fn refresh() -> CmdResult<String> {
     let output = child.wait_with_output().expect("failed to wait on child");
 
     if !output.status.success() {
-        Err("Command exited with errors".to_string())
+        Err(CommandError::ExitedWithError)
     } else {
         Ok("Command was executed successfully".to_string())
     }
 }
 
-pub fn boot(path: &str) -> CmdResult<String> {
+pub fn boot(path: &str) -> CommandResult<String> {
     let mut child = Command::new("vagrant")
         .current_dir(path)
         .stdout(Stdio::inherit())
@@ -76,13 +77,13 @@ pub fn boot(path: &str) -> CmdResult<String> {
     let status = child.wait().expect("failed to wait on child");
 
     if !status.success() {
-        Err("Command exited with errors".to_string())
+        Err(CommandError::ExitedWithError)
     } else {
         Ok("Command was executed successfully".to_string())
     }
 }
 
-pub fn execute(command: &str, path: &str) -> CmdResult<String> {
+pub fn execute(command: String, path: &str) -> CommandResult<String> {
     let mut child = Command::new("vagrant")
         .current_dir(path)
         .stdout(Stdio::inherit())
@@ -94,13 +95,13 @@ pub fn execute(command: &str, path: &str) -> CmdResult<String> {
     let status = child.wait().expect("failed to wait on child");
 
     if !status.success() {
-        Err("Command exited with errors".to_string())
+        Err(CommandError::ExitedWithError)
     } else {
         Ok("Command was executed successfully".to_string())
     }
 }
 
-pub fn dump(path: &str, file: String) -> CmdResult<String> {
+pub fn dump(path: &str, file: String) -> CommandResult<String> {
     let child = Command::new("cat")
         .current_dir(path)
         .stdout(Stdio::inherit())
@@ -112,13 +113,13 @@ pub fn dump(path: &str, file: String) -> CmdResult<String> {
     let output = child.wait_with_output().expect("failed to wait on child");
 
     if !output.status.success() {
-        Err("Command exited with errors".to_string())
+        Err(CommandError::ExitedWithError)
     } else {
         Ok("Command was executed successfully".to_string())
     }
 }
 
-pub fn edit(path: &str, file: String) -> CmdResult<String> {
+pub fn edit(path: &str, file: String) -> Result<String, CommandError> {
     let editor = env::var_os("EDITOR");
 
     if editor.is_some() {
@@ -133,11 +134,11 @@ pub fn edit(path: &str, file: String) -> CmdResult<String> {
         let output = child.wait_with_output().expect("failed to wait on child");
 
         if !output.status.success() {
-            Err("Command exited with errors".to_string())
+            Err(CommandError::ExitedWithError)
         } else {
             Ok("Command was executed successfully".to_string())
         }
     } else {
-        Err("The environment variable EDITOR does not appear to be set".to_string())
+        Err(CommandError::EnvNotFound("EDITOR".to_string()))
     }
 }
