@@ -34,7 +34,7 @@ get_payload() {
   "target_commitish": "master",
   "name": "v$version",
   "body": "Release of version $version",
-  "draft": true,
+  "draft": false,
   "prerelease": false
 }
 EOF
