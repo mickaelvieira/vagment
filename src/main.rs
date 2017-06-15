@@ -18,12 +18,12 @@ use vagment::app::number::AppNumber;
 use vagment::app::args::AppArgs;
 
 fn main() {
-    let cli = vagment::app::cli::init();
-    let matches = cli.get_matches();
+    let mut cli = vagment::app::cli::init();
+    let matches = cli.clone().get_matches();
     let machines = vagrant::get_machine_list();
 
     match parse(matches, &machines) {
-        Ok((command, number)) => {
+        Some((command, number)) => {
             match run(command, number, machines) {
                 Ok(m) => {
                     logger::info(m);
@@ -35,14 +35,15 @@ fn main() {
                 }
             }
         }
-        Err(e) => {
-            logger::error(e);
+        None => {
+            let _ = cli.print_help();
+            println!("");
             std::process::exit(1);
         }
     }
 }
 
-fn parse(matches: ArgMatches, machines: &Vec<Machine>) -> Result<(String, u16), String> {
+fn parse(matches: ArgMatches, machines: &Vec<Machine>) -> Option<(String, u16)> {
     let mut number = 0;
     let mut command = String::from("");
 
@@ -54,17 +55,17 @@ fn parse(matches: ArgMatches, machines: &Vec<Machine>) -> Result<(String, u16), 
     }
 
     if command.needs_a_machine() && !number.is_valid() {
-        if machines.len() > 1 {
-            number = ask_for_machine_number(&machines);
+        number = if machines.len() > 1 {
+            ask_for_machine_number(&machines)
         } else {
-            number = 1;
-        }
+            1
+        };
     }
 
     if command.is_empty() {
-        Err("Please provide a command to run. For more information try --help".to_string())
+        None
     } else {
-        Ok((command, number))
+        Some((command, number))
     }
 }
 
