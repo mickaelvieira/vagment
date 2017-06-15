@@ -48,14 +48,14 @@ $ vagment edit <Machine Number>
 ```
 
 Execute one of the following vagrant commands against a given machine
-- up
-- ssh
-- halt
-- reload
-- resume
-- status
-- destroy
-- suspend
+- `up`
+- `ssh`
+- `halt`
+- `reload`
+- `resume`
+- `status`
+- `destroy`
+- `suspend`
 
 ```
 $ vagment <Vagrant command> <Machine Number>
