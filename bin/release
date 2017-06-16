@@ -23,7 +23,8 @@ get_branch() {
 }
 
 get_access_token() {
-    cat "$WD/github/.access_token"
+    local file=$1
+    cat "$file"
 }
 
 get_payload() {
@@ -59,11 +60,13 @@ main() {
     local endpoint="https://api.github.com/repos/$owner/$repo/releases"
     local branch="$(get_branch)"
     local version="$(get_version)"
-    local token="$(get_access_token)"
-    local payload=$(get_payload "$version")
+    local credentials="$WD/github/.access_token"
 
-    [[ "$branch" != master ]] && error "Your are not on the master branch"
+    [[ "$branch" != master ]] && error "Your are not on the master branch mate."
+    [[ -f "$credentials" ]] || error "Access Token file does not exist"
 
+    local token=$(get_access_token "$credentials")
+    local payload=$(get_payload "$credentials")
     local message=$(get_confirmation_message "$branch" "$version")
 
     read -erp "$(echo -e "$message")" answer
