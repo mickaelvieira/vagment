@@ -1,25 +1,25 @@
 #!/bin/bash
 
 set -e -u -o pipefail
-set -x
+# set -x
 
 declare -r WD="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 
 info() {
-    echo -e "\x1b[32m\xE2\x87\x92 $1\x1b[0m"
+    printf "\x1b[32m\xE2\x87\x92 %s\x1b[0m\n" "$1"
 }
 
 error() {
-    echo -e "\x1b[97m\x1b[41m\x21\x1b[0m \x1b[31m$1\x1b[0m" 1>&2
+    printf "\x1b[97m\x1b[41m\x21\x1b[0m \x1b[31m%s\x1b[0m\n" "$1" 1>&2
     exit 1
 }
 
 get_version() {
-    grep -Po '(version = )\"([\.0-9]+)\"' Cargo.toml | grep -Po '([\.0-9]+)'
+    grep -E '^version' Cargo.toml | grep -Eo '([\.0-9]+)'
 }
 
 get_branch() {
-    git branch | grep -e "^\*" | awk '{print $2}'
+    git branch | grep -E "^\*" | awk '{print $2}'
 }
 
 get_access_token() {
@@ -28,7 +28,7 @@ get_access_token() {
 
 get_payload() {
   local version=$1
-  cat <<EOF
+  cat <<EOM
 {
   "tag_name": "v$version",
   "target_commitish": "master",
@@ -37,23 +37,50 @@ get_payload() {
   "draft": false,
   "prerelease": false
 }
-EOF
+EOM
+}
+
+get_confirmation_message() {
+  local branch=$1
+  local version=$2
+
+  cat <<EOM
+You are about to create a new release:
+- Branch: \x1b[33m${branch}\x1b[0m
+- Version: \x1b[33m${version}\x1b[0m
+
+Do you want to proceed [y/N]:
+EOM
 }
 
 main() {
     local owner="mickaelvieira"
     local repo="vagment"
     local endpoint="https://api.github.com/repos/$owner/$repo/releases"
+    local branch="$(get_branch)"
     local version="$(get_version)"
     local token="$(get_access_token)"
     local payload=$(get_payload "$version")
 
-    curl -v \
-      -X POST \
-      -H "Content-Type: application/json" \
-      -H "Authorization: token $token" \
-      --data "$payload" \
-      "$endpoint"
+    [[ "$branch" != master ]] && error "Your are not on the master branch"
+
+    local message=$(get_confirmation_message "$branch" "$version")
+
+    read -erp "$(echo -e "$message")" answer
+
+    [[ -z "$answer" ]] && answer="n"
+
+    if [[ "$answer" == y ]]; then
+        info "Calling Github API..."
+        curl -v \
+          -X POST \
+          -H "Content-Type: application/json" \
+          -H "Authorization: token $token" \
+          --data "$payload" \
+          "$endpoint"
+    else
+        info "skipped!"
+    fi
 }
 
 main
