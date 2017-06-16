@@ -49,6 +49,7 @@ impl Machine {
 pub trait Machines {
     fn get_machine_by_number(&self, number: u16) -> Option<&Machine>;
     fn get_running_machines(&self) -> Vec<Machine>;
+    fn get_stopped_machines(&self) -> Vec<Machine>;
 }
 
 impl Machines for Vec<Machine> {
@@ -64,6 +65,13 @@ impl Machines for Vec<Machine> {
     fn get_running_machines(&self) -> Vec<Machine> {
         self.iter()
             .filter(|m| m.is_running())
+            .map(|m| m.clone())
+            .collect()
+    }
+
+    fn get_stopped_machines(&self) -> Vec<Machine> {
+        self.iter()
+            .filter(|m| !m.is_running())
             .map(|m| m.clone())
             .collect()
     }
@@ -136,6 +144,20 @@ mod tests {
         m.push(m2);
 
         let r = m.get_running_machines();
+        assert_eq!(r, vec![m0]);
+    }
+
+    #[test]
+    fn it_returns_a_vector_with_only_the_non_running_machines() {
+        let m0 = Machine::from_output_line("45457b5 default virtualbox poweroff /path/to/vm2");
+        let m1 = Machine::from_output_line("00057e0 default virtualbox running /path/to/vm1");
+        let m2 = Machine::from_output_line("45457b5 default virtualbox poweroff /path/to/vm2");
+
+        let mut m = Vec::new();
+        m.push(m1);
+        m.push(m2);
+
+        let r = m.get_stopped_machines();
         assert_eq!(r, vec![m0]);
     }
 }

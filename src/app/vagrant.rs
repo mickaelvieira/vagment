@@ -47,6 +47,22 @@ pub fn shutdown(machines: Vec<Machine>) -> CommandResult<String> {
     Ok(String::from(""))
 }
 
+pub fn bootup(machines: Vec<Machine>) -> CommandResult<String> {
+    for machine in machines {
+        let mut child = Command::new("vagrant")
+            .current_dir(machine.get_path())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .arg("up")
+            .spawn()
+            .expect("failed");
+
+        let _ = child.wait().expect("failed to wait on child");
+    }
+
+    Ok(String::from(""))
+}
+
 pub fn refresh() -> CommandResult<String> {
     let child = Command::new("vagrant")
         .arg("global-status")
@@ -59,24 +75,6 @@ pub fn refresh() -> CommandResult<String> {
     let output = child.wait_with_output().expect("failed to wait on child");
 
     if !output.status.success() {
-        Err(CommandError::ExitedWithError)
-    } else {
-        Ok("Command was executed successfully".to_string())
-    }
-}
-
-pub fn boot(path: &str) -> CommandResult<String> {
-    let mut child = Command::new("vagrant")
-        .current_dir(path)
-        .stdout(Stdio::inherit())
-        .stderr(Stdio::inherit())
-        .arg("up")
-        .spawn()
-        .expect("failed to execute process");
-
-    let status = child.wait().expect("failed to wait on child");
-
-    if !status.success() {
         Err(CommandError::ExitedWithError)
     } else {
         Ok("Command was executed successfully".to_string())

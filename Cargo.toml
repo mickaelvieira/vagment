@@ -1,8 +1,14 @@
 [package]
 name = "vagment"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Mickael Vieira <contact@mickael-vieira.com>"]
+description = "A simple command line tool to manage your Vagrant Virtual Machines."
+homepage = "https://github.com/mickaelvieira/vagment"
+repository = "https://github.com/mickaelvieira/vagment"
+documentation = "https://github.com/mickaelvieira/vagment"
+readme = "README.md"
+license = "MIT"
 
 [dependencies]
-ansi_term = "0.9.0"
-clap = "2.20.5"
+ansi_term = "^0"
+clap = "^2"

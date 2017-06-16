@@ -39,4 +39,5 @@ pub fn init<'a, 'b>() -> App<'a, 'b> {
         .subcommand(SubCommand::with_name("list").about("List available machines"))
         .subcommand(SubCommand::with_name("refresh").about("Clear vagrant cache"))
         .subcommand(SubCommand::with_name("shutdown").about("Shutdown all running machines"))
+        .subcommand(SubCommand::with_name("bootup").about("Boot up all stopped machines"))
 }
