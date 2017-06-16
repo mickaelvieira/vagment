@@ -2,7 +2,7 @@
 name = "vagment"
 version = "0.2.0"
 authors = ["Mickael Vieira <contact@mickael-vieira.com>"]
-description = "A simple command line tool to manage Vagrant Virtual Machines."
+description = "A simple command line tool to manage your Vagrant Virtual Machines."
 homepage = "https://github.com/mickaelvieira/vagment"
 repository = "https://github.com/mickaelvieira/vagment"
 documentation = "https://github.com/mickaelvieira/vagment"

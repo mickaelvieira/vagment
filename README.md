@@ -1,6 +1,6 @@
 # Vagment
 
-A simple command line tool to manage [Vagrant](https://www.vagrantup.com) Virtual Machines.
+A simple command line tool to manage your [Vagrant](https://www.vagrantup.com) Virtual Machines.
 
 ## Installation
 
