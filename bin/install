@@ -18,6 +18,7 @@ is_install() {
 
 check_deps() {
   is_install curl
+  is_install rustc
   is_install cargo
 }
 

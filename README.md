@@ -58,7 +58,13 @@ List all the virtual machines
 $ vagment list
 ```
 
-Halt all the virtual machines
+Boot up all stopped the virtual machines
+
+```sh
+$ vagment bootup
+```
+
+Halt all running virtual machines
 
 ```sh
 $ vagment shutdown

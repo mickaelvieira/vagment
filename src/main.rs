@@ -101,7 +101,7 @@ fn run(command: String, number: u16, machines: Vec<Machine>) -> Result<String, C
 
         if command.needs_machine_up() && !machine.is_running() {
             logger::info("VM is not running, we are going to boot it up");
-            if let Err(_) = vagrant::boot(machine.get_path()) {
+            if let Err(_) = vagrant::execute("up".to_string(), machine.get_path()) {
                 return Err(CommandError::MachineNotBootable);
             }
         }
@@ -124,6 +124,7 @@ fn run(command: String, number: u16, machines: Vec<Machine>) -> Result<String, C
             "list" => vagrant::print_list(machines),
             "refresh" => vagrant::refresh(),
             "shutdown" => vagrant::shutdown(machines.get_running_machines()),
+            "bootup" => vagrant::bootup(machines.get_stopped_machines()),
             _ => Err(CommandError::InvalidCommand(command.to_string())),
         }
     }
