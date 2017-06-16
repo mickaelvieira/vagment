@@ -58,7 +58,7 @@ List all the virtual machines
 $ vagment list
 ```
 
-Boot up all stopped the virtual machines
+Boot up all stopped virtual machines
 
 ```sh
 $ vagment bootup
