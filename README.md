@@ -1,11 +1,11 @@
 # Vagment
 
-A simple command line tool to manage Vagrant Virtual Machines.
+A simple command line tool to manage [Vagrant](https://www.vagrantup.com) Virtual Machines.
 
 ## Installation
 
 ##### Dependencies
-- [rust](https://www.rust-lang.org/en-US/install.html)
+- [rust](https://www.rust-lang.org/)
 - [cargo](https://github.com/rust-lang/cargo)
 - [curl](https://curl.haxx.se/docs/)
 
@@ -19,7 +19,7 @@ $ vagment --version
 
 [Vagrant](https://www.vagrantup.com) provides a great client to interact with
 virtual machines however I always find myself typing the same commands and
-I wanted a tool to be more productive. (or maybe I simply needed a side project to learn [Rust](https://www.rust-lang.org/en-US/install.html))
+I wanted a tool to be more productive. (or maybe I simply needed a side project to learn [Rust](https://www.rust-lang.org/))
 
 Even though you can do something like `vagrant up [name|id]`, I usually don't set
 the virtual machine's name (call me lazy) and honestly who seriously remembers those IDs.
@@ -45,6 +45,12 @@ $ vagment halt 1
 ***NOTE***: If you have only one virtual machine, you don't even need to type the `machine number`.
 
 ### Commands
+
+Display `usage` screen
+
+```
+$ vagment help
+```
 
 List all the virtual machines
 
@@ -96,6 +102,8 @@ Or simply
 $ vagment <Vagrant Command>
 ```
 ***NOTE***: If you have more than one virtual machine, you will be prompted for the machine number.
+
+***NOTE***: if you execute `vagment ssh` when the machine is not running, `vagment` will start up the machine for you.
 
 ## License
 
