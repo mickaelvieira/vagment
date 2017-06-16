@@ -46,7 +46,7 @@ $ vagment halt 1
 
 ### Commands
 
-Display `usage` screen
+Display help
 
 ```
 $ vagment help
@@ -76,7 +76,7 @@ Dump the `Vagrantfile`
 $ vagment dump <Machine Number>
 ```
 
-Open the `Vagrantfile` in your favourite `$EDITOR`
+Open the `Vagrantfile` with your favourite `$EDITOR`
 
 ```sh
 $ vagment edit <Machine Number>
@@ -103,7 +103,7 @@ $ vagment <Vagrant Command>
 ```
 ***NOTE***: If you have more than one virtual machine, you will be prompted for the machine number.
 
-***NOTE***: if you execute `vagment ssh` when the machine is not running, `vagment` will start up the machine for you.
+***NOTE***: if you execute `vagment ssh` when the machine is not running, `vagment` will start it up for you.
 
 ## License
 
