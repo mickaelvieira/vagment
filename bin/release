@@ -130,7 +130,7 @@ main() {
     [[ -f "$credentials" ]] || error "Access Token file does not exist"
 
     local token=$(get_access_token "$credentials")
-    local payload=$(get_payload "$credentials")
+    local payload=$(get_payload "$version")
     local message=$(get_confirmation_message "$branch" "$version")
 
     read -erp "$(echo -e "$message")" answer
