@@ -86,6 +86,7 @@ fn ask_for_machine_number(machines: &[Machine]) -> u16 {
     input.trim().to_string().parse().unwrap_or(0)
 }
 
+#[cfg_attr(feature = "cargo-clippy", allow(needless_pass_by_value))]
 fn run(command: String, number: u16, machines: Vec<Machine>) -> Result<String, CommandError> {
     if machines.len() < 1 {
         return Err(CommandError::NoMachinesFound);
@@ -116,7 +117,7 @@ fn run(command: String, number: u16, machines: Vec<Machine>) -> Result<String, C
         }
     } else {
         match command.as_str() {
-            "list" => vagrant::print_list(machines),
+            "list" => vagrant::print_list(&machines),
             "refresh" => vagrant::refresh(),
             "shutdown" => vagrant::shutdown(machines.get_running_machines()),
             "bootup" => vagrant::bootup(machines.get_stopped_machines()),

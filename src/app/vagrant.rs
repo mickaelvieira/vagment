@@ -19,15 +19,17 @@ pub fn get_machine_list() -> Vec<Machine> {
 
     let output = child.wait_with_output().expect("failed to wait on child");
     let owned = String::from_utf8_lossy(&output.stdout).into_owned();
-    let lines = owned.lines()
-        .skip(2)
-        .filter(|x| x.split_whitespace().count() == 5);
 
-    lines.map(Machine::from_output_line).collect()
+    owned.lines()
+        .skip(2)
+        .filter(|x| x.split_whitespace().count() == 5)
+        .enumerate()
+        .map(|(i, line)| Machine::from_output_line(i as u16 + 1, line))
+        .collect()
 }
 
-pub fn print_list(machines: Vec<Machine>) -> CommandResult<String> {
-    println!("{}", formatter::format(&machines));
+pub fn print_list(machines: &[Machine]) -> CommandResult<String> {
+    println!("{}", formatter::format(machines));
     Ok(String::from(""))
 }
 
