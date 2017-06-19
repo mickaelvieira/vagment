@@ -121,7 +121,7 @@ fn run(command: String, number: u16, machines: Vec<Machine>) -> Result<String, C
             "refresh" => vagrant::refresh(),
             "shutdown" => vagrant::shutdown(machines.get_running_machines()),
             "bootup" => vagrant::bootup(machines.get_stopped_machines()),
-            _ => Err(CommandError::InvalidCommand(command.to_string())),
+            _ => Err(CommandError::InvalidCommand(command)),
         }
     }
 }
