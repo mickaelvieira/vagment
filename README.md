@@ -55,6 +55,8 @@ $ vagment halt 1
 
 ***NOTE***: If you don't specify the `machine number` and you have only one virtual machine, `vagment` will use it otherwise you will be prompted for the `machine number`.
 
+***NOTE***: if you execute `vagment ssh` and the machine is not running, `vagment` will start it up for you.
+
 ### Commands
 
 Display help
@@ -118,8 +120,6 @@ Or simply
 ```sh
 $ vagment <Vagrant Command>
 ```
-
-***NOTE***: if you execute `vagment ssh` and the machine is not running, `vagment` will start it up for you.
 
 ## License
 
