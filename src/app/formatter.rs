@@ -34,7 +34,7 @@ fn get_separator() -> String {
     format!("{}", Yellow.paint(s))
 }
 
-pub fn format(machines: &Vec<Machine>) -> String {
+pub fn format(machines: &[Machine]) -> String {
     let mut lines = Vec::new();
     lines.push(get_empty_line());
     lines.push(get_header());

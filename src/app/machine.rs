@@ -65,14 +65,14 @@ impl Machines for Vec<Machine> {
     fn get_running_machines(&self) -> Vec<Machine> {
         self.iter()
             .filter(|m| m.is_running())
-            .map(|m| m.clone())
+            .cloned()
             .collect()
     }
 
     fn get_stopped_machines(&self) -> Vec<Machine> {
         self.iter()
             .filter(|m| !m.is_running())
-            .map(|m| m.clone())
+            .cloned()
             .collect()
     }
 }

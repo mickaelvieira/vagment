@@ -19,7 +19,7 @@ $ vagment --version
 
 [Vagrant](https://www.vagrantup.com) provides a great client to interact with
 virtual machines however I always find myself typing the same commands and
-I wanted a tool to be more productive. (or maybe I simply needed a side project to learn [Rust](https://www.rust-lang.org/))
+I wanted a tool to be more productive (or maybe I simply needed a side project to learn [Rust](https://www.rust-lang.org/)).
 
 Even though you can do something like `vagrant up [name|id]`, I usually don't set
 the virtual machine's name (call me lazy) and honestly who seriously remembers those IDs.
