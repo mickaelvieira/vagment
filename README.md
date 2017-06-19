@@ -24,7 +24,7 @@ environments however I always find myself typing the same commands and
 I wanted a tool to be a bit more productive. Or maybe, I simply needed a side project to
 start learning [Rust](https://www.rust-lang.org/) :).
 
-This tool aims to bring useful functionnalities when dealing with one or multiple
+This tool aims to bring useful functionalities when dealing with one or multiple
 virtual machines such as:
 - Quickly edit the Vagrantfile
 - Quickly `cat` the Vagrantfile
@@ -53,7 +53,7 @@ $ vagment up 2
 $ vagment halt 1
 ```
 
-***NOTE***: If you only have one virtual machine, you don't even need to type the `machine number`.
+***NOTE***: If you don't specify the `machine number` and you have only one virtual machine, `vagment` will use it otherwise you will be prompted for the `machine number`.
 
 ### Commands
 
@@ -118,9 +118,8 @@ Or simply
 ```sh
 $ vagment <Vagrant Command>
 ```
-***NOTE***: If you have more than one virtual machine, you will be prompted for the machine number.
 
-***NOTE***: if you execute `vagment ssh` when the machine is not running, `vagment` will start it up for you.
+***NOTE***: if you execute `vagment ssh` and the machine is not running, `vagment` will start it up for you.
 
 ## License
 
