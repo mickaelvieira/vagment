@@ -47,7 +47,7 @@ get_next_branch_message() {
     local patch=$3
 
     cat <<EOM
-Do you want to create the next release branch? [No]:
+Which release branch do you want to create? [None]:
 1) Major Version (\x1b[33m$major\x1b[0m)
 2) Minor Version (\x1b[33m$minor\x1b[0m)
 3) Patch Version (\x1b[33m$patch\x1b[0m)
