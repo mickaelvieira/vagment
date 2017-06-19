@@ -16,9 +16,9 @@ fn get_header() -> String {
     format!("{}", Yellow.paint(o))
 }
 
-fn get_machine_line(index: usize, machine: &Machine) -> String {
+fn get_machine_line(machine: &Machine) -> String {
     let line = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10}",
-                       index + 1,
+                       machine.get_number(),
                        machine.get_name(),
                        machine.get_state(),
                        machine.get_path());
@@ -34,13 +34,13 @@ fn get_separator() -> String {
     format!("{}", Yellow.paint(s))
 }
 
-pub fn format(machines: &Vec<Machine>) -> String {
+pub fn format(machines: &[Machine]) -> String {
     let mut lines = Vec::new();
     lines.push(get_empty_line());
     lines.push(get_header());
     lines.push(get_separator());
-    for (index, machine) in machines.iter().enumerate() {
-        lines.push(get_machine_line(index, machine));
+    for machine in machines {
+        lines.push(get_machine_line(machine));
     }
     lines.push(get_empty_line());
     lines.join("\n")

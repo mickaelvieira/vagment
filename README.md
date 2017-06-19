@@ -17,15 +17,26 @@ $ vagment --version
 
 ## Documentation
 
-[Vagrant](https://www.vagrantup.com) provides a great client to interact with
-virtual machines however I always find myself typing the same commands and
-I wanted a tool to be more productive. (or maybe I simply needed a side project to learn [Rust](https://www.rust-lang.org/))
+### Motivation
 
-Even though you can do something like `vagrant up [name|id]`, I usually don't set
+[Vagrant](https://www.vagrantup.com) provides a great client to interact with
+environments however I always find myself typing the same commands and
+I wanted a tool to be a bit more productive. Or maybe, I simply needed a side project to
+start learning [Rust](https://www.rust-lang.org/) :).
+
+This tool aims to bring useful functionalities when dealing with one or multiple
+virtual machines such as:
+- Quickly edit the Vagrantfile
+- Quickly `cat` the Vagrantfile
+- Autostart the machine before `ssh`ing into it
+- Boot up or shutdown all machines available
+- Run common commands `up`, `halt`, `reload`, etc... without having to `cd` into the directory
+
+Even though you can do something like `vagrant up [name|id]`, I usually don't really set
 the virtual machine's name (call me lazy) and honestly who seriously remembers those IDs.
 
-I personally find much easier to type a `number machine` instead of an ID to execute
-a command against an existing machine.
+I personally prefer having to type or remember a `machine number` instead of
+an ID to execute a command.
 
 ### Basic usage
 
@@ -42,7 +53,9 @@ $ vagment up 2
 $ vagment halt 1
 ```
 
-***NOTE***: If you have only one virtual machine, you don't even need to type the `machine number`.
+***NOTE***: If you don't specify the `machine number` and you have only one virtual machine, `vagment` will use it otherwise you will be prompted for the `machine number`.
+
+***NOTE***: if you execute `vagment ssh` and the machine is not running, `vagment` will start it up for you.
 
 ### Commands
 
@@ -88,7 +101,7 @@ Open the `Vagrantfile` with your favourite `$EDITOR`
 $ vagment edit <Machine Number>
 ```
 
-Execute one of the following `vagrant` commands against a given machine:
+Execute one of the following `vagrant` commands:
 - `up`
 - `ssh`
 - `halt`
@@ -107,9 +120,6 @@ Or simply
 ```sh
 $ vagment <Vagrant Command>
 ```
-***NOTE***: If you have more than one virtual machine, you will be prompted for the machine number.
-
-***NOTE***: if you execute `vagment ssh` when the machine is not running, `vagment` will start it up for you.
 
 ## License
 

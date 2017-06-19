@@ -25,7 +25,7 @@ fn main() {
     let matches = cli.clone().get_matches();
     let machines = vagrant::get_machine_list();
 
-    match parse(matches, &machines) {
+    match parse(&matches, &machines) {
         Some((command, number)) => {
             match run(command, number, machines) {
                 Ok(m) => {
@@ -46,7 +46,7 @@ fn main() {
     }
 }
 
-fn parse(matches: ArgMatches, machines: &Vec<Machine>) -> Option<(String, u16)> {
+fn parse(matches: &ArgMatches, machines: &[Machine]) -> Option<(String, u16)> {
     let mut number = 0;
     let mut command = String::from("");
 
@@ -59,7 +59,7 @@ fn parse(matches: ArgMatches, machines: &Vec<Machine>) -> Option<(String, u16)> 
 
     if command.needs_a_machine() && !number.is_valid() {
         number = if machines.len() > 1 {
-            ask_for_machine_number(&machines)
+            ask_for_machine_number(machines)
         } else {
             1
         };
@@ -72,8 +72,8 @@ fn parse(matches: ArgMatches, machines: &Vec<Machine>) -> Option<(String, u16)> 
     }
 }
 
-fn ask_for_machine_number(machines: &Vec<Machine>) -> u16 {
-    println!("{}", formatter::format(&machines));
+fn ask_for_machine_number(machines: &[Machine]) -> u16 {
+    println!("{}", formatter::format(machines));
     print!("{}", Yellow.paint("Please enter a machine number: "));
 
     let _ = stdout().flush();
@@ -86,6 +86,7 @@ fn ask_for_machine_number(machines: &Vec<Machine>) -> u16 {
     input.trim().to_string().parse().unwrap_or(0)
 }
 
+#[cfg_attr(feature = "cargo-clippy", allow(needless_pass_by_value))]
 fn run(command: String, number: u16, machines: Vec<Machine>) -> Result<String, CommandError> {
     if machines.len() < 1 {
         return Err(CommandError::NoMachinesFound);
@@ -101,31 +102,26 @@ fn run(command: String, number: u16, machines: Vec<Machine>) -> Result<String, C
 
         if command.needs_machine_up() && !machine.is_running() {
             logger::info("VM is not running, we are going to boot it up");
-            if let Err(_) = vagrant::execute("up".to_string(), machine.get_path()) {
+            if vagrant::execute("up".to_string(), machine.get_path()).is_err() {
                 return Err(CommandError::MachineNotBootable);
             }
         }
 
         match command.as_str() {
-            "up" => vagrant::execute(command, machine.get_path()),
-            "ssh" => vagrant::execute(command, machine.get_path()),
-            "halt" => vagrant::execute(command, machine.get_path()),
-            "status" => vagrant::execute(command, machine.get_path()),
-            "resume" => vagrant::execute(command, machine.get_path()),
-            "reload" => vagrant::execute(command, machine.get_path()),
-            "suspend" => vagrant::execute(command, machine.get_path()),
-            "destroy" => vagrant::execute(command, machine.get_path()),
+            "up" | "ssh" | "halt" | "status" | "resume" | "reload" | "suspend" | "destroy" => {
+                vagrant::execute(command, machine.get_path())
+            }
             "dump" => vagrant::dump(machine.get_path(), machine.get_vagrant_file_path()),
             "edit" => vagrant::edit(machine.get_path(), machine.get_vagrant_file_path()),
             _ => Err(CommandError::InvalidCommand(command)),
         }
     } else {
         match command.as_str() {
-            "list" => vagrant::print_list(machines),
+            "list" => vagrant::print_list(&machines),
             "refresh" => vagrant::refresh(),
             "shutdown" => vagrant::shutdown(machines.get_running_machines()),
             "bootup" => vagrant::bootup(machines.get_stopped_machines()),
-            _ => Err(CommandError::InvalidCommand(command.to_string())),
+            _ => Err(CommandError::InvalidCommand(command)),
         }
     }
 }
