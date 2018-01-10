@@ -8,29 +8,29 @@ fn get_empty_line() -> String {
 }
 
 fn get_header() -> String {
-    let o = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10}",
-                    "Number",
-                    "Name",
-                    "State",
-                    "Path");
+    let o = format!(
+        "{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10}",
+        "Number", "Name", "State", "Path"
+    );
     format!("{}", Yellow.paint(o))
 }
 
 fn get_machine_line(machine: &Machine) -> String {
-    let line = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10}",
-                       machine.get_number(),
-                       machine.get_name(),
-                       machine.get_state(),
-                       machine.get_path());
+    let line = format!(
+        "{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10}",
+        machine.get_number(),
+        machine.get_name(),
+        machine.get_state(),
+        machine.get_path()
+    );
     format!("{}", Green.paint(line))
 }
 
 fn get_separator() -> String {
-    let s = format!("{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10}",
-                    "----------",
-                    "----------",
-                    "----------",
-                    "----------");
+    let s = format!(
+        "{0: ^10} | {1: ^10} | {2: ^10} | {3: ^10}",
+        "----------", "----------", "----------", "----------"
+    );
     format!("{}", Yellow.paint(s))
 }
 

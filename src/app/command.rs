@@ -9,9 +9,9 @@ impl AppCommand for str {
     }
 
     fn needs_a_machine(&self) -> bool {
-        self == "up" || self == "halt" || self == "ssh" || self == "destroy" ||
-        self == "status" || self == "suspend" || self == "reload" ||
-        self == "resume" || self == "dump" || self == "edit"
+        self == "up" || self == "halt" || self == "ssh" || self == "destroy" || self == "status"
+            || self == "suspend" || self == "reload" || self == "resume" || self == "dump"
+            || self == "edit"
     }
 }
 

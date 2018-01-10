@@ -10,7 +10,8 @@ pub struct Machine {
 
 impl Machine {
     pub fn from_output_line<S>(number: u16, line: S) -> Machine
-        where S: Into<String>
+    where
+        S: Into<String>,
     {
         let line = line.into();
         let words: Vec<&str> = line.split_whitespace().collect();
@@ -68,17 +69,11 @@ impl Machines for Vec<Machine> {
     }
 
     fn get_running_machines(&self) -> Vec<Machine> {
-        self.iter()
-            .filter(|m| m.is_running())
-            .cloned()
-            .collect()
+        self.iter().filter(|m| m.is_running()).cloned().collect()
     }
 
     fn get_stopped_machines(&self) -> Vec<Machine> {
-        self.iter()
-            .filter(|m| !m.is_running())
-            .cloned()
-            .collect()
+        self.iter().filter(|m| !m.is_running()).cloned().collect()
     }
 }
 

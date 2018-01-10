@@ -20,7 +20,8 @@ pub fn get_machine_list() -> Vec<Machine> {
     let output = child.wait_with_output().expect("failed to wait on child");
     let owned = String::from_utf8_lossy(&output.stdout).into_owned();
 
-    owned.lines()
+    owned
+        .lines()
         .skip(2)
         .filter(|x| x.split_whitespace().count() == 5)
         .enumerate()

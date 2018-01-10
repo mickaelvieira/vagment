@@ -23,11 +23,11 @@ impl Display for CommandError {
     fn fmt(&self, f: &mut Formatter) -> Result {
         match *self {
             CommandError::ExitedWithError => write!(f, "Command exited with errors"),
-            CommandError::EnvNotFound(ref name) => {
-                write!(f,
-                       "The environment variable '{}' does not appear to be set",
-                       name)
-            }
+            CommandError::EnvNotFound(ref name) => write!(
+                f,
+                "The environment variable '{}' does not appear to be set",
+                name
+            ),
             CommandError::InvalidCommand(ref name) => write!(f, "Invalid command '{}'", name),
             CommandError::NoMachinesFound => {
                 write!(f, "Could not find any vagrant machines available")

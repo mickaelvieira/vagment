@@ -1,5 +1,5 @@
-extern crate clap;
 extern crate ansi_term;
+extern crate clap;
 extern crate vagment;
 
 use std::io;
@@ -26,18 +26,16 @@ fn main() {
     let machines = vagrant::get_machine_list();
 
     match parse(&matches, &machines) {
-        Some((command, number)) => {
-            match run(command, number, machines) {
-                Ok(m) => {
-                    logger::info(m);
-                    std::process::exit(0);
-                }
-                Err(e) => {
-                    logger::error(e);
-                    std::process::exit(1);
-                }
+        Some((command, number)) => match run(command, number, machines) {
+            Ok(m) => {
+                logger::info(m);
+                std::process::exit(0);
             }
-        }
+            Err(e) => {
+                logger::error(e);
+                std::process::exit(1);
+            }
+        },
         None => {
             let _ = cli.print_help();
             println!("");
