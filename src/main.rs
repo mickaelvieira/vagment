@@ -38,7 +38,7 @@ fn main() {
         },
         None => {
             let _ = cli.print_help();
-            println!("");
+            println!();
             std::process::exit(1);
         }
     }
